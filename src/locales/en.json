@@ -1,0 +1,31 @@
+{
+  "language": "English",
+  "code": "en",
+  "navigation": {
+    "home": "Home",
+    "datasets": "Datasets",
+    "admin": "Admin",
+    "services": "Data services",
+    "documentation": "Documentation",
+    "monitoring": "Monitoring",
+    "stations": "Stations"
+  },
+  "util": {
+    "token": "Token",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "footer": {
+    "powered_by": "Powered by"
+  },
+  "datasets": {
+    "topic": "Topic",
+    "messages": "WIS 2.0 messages",
+    "oafeat": "Observations",
+    "oarec": "OGC API - Record",
+    "dm": "Discovery metadata",
+    "mcf": "Metadata control file",
+    "edit": "Edit",
+    "mqp": "PubSub"
+  }
+}

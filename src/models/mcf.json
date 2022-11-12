@@ -1,0 +1,708 @@
+{
+    "type": "object",
+    "properties": {
+        "mcf": {
+            "type": "object",
+            "description": "core mcf metadata",
+            "properties": {
+                "version": {
+                    "type": "number",
+                    "description": "version of MCF format",
+                    "const": 1.0
+                }
+            },
+            "required": [
+                "version"
+            ],
+            "x-display": "hidden"
+        },
+        "wis2box": {
+            "type": "object",
+            "title": "wis2box",
+            "description": "WIS 2.0 metadata",
+            "properties": {
+                "topic_hierarchy": {
+                    "type": "string",
+                    "pattern": "^[a-z]{3}\\.[_a-z]+\\.(data|metadata|reports)\\.(core|reccomended)\\.[\\w]+\\.[\\w-]+\\.[\\w]+$",
+                    "description": "unique identifier for this metadata file"
+                },
+                "country": {
+                    "type": "string",
+                    "description": "Lower case representation of ISO3166 3-letter code. Includes extensions for partner organizations",
+                    "pattern": "^[a-z]{3}$",
+                    "x-cols": 2,
+                    "x-directives": [
+                        {
+                            "name": "mask",
+                            "value": "AAA"
+                        }
+                    ]
+                },
+                "center_id": {
+                    "type": "string",
+                    "x-cols": 4,
+                    "description": "Acronym as specified by member"
+                },
+                "data_category": {
+                    "type": "string",
+                    "x-cols": 4,
+                    "description": "Earth system discipline subcategory"
+                },
+                "retention": {
+                    "type": "string",
+                    "pattern": "^[A-Z]\\d*[A-Z]$",
+                    "x-cols": 2,
+                    "description": "data retention"
+                }
+            },
+            "required": [
+                "retention",
+                "topic_hierarchy",
+                "data_category",
+                "country",
+                "center_id"
+            ]
+        },
+        "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "unique identifier for this metadata file",
+            "properties": {
+                "identifier": {
+                    "type": "string",
+                    "description": "unique identifier for this metadata file, usually the same as the topic"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "primary language used for documenting metadata, the metadata records themselves can be provided in multiple languages nonetheless",
+                    "pattern": "^[a-z]{2}$",
+                    "x-cols": 6,
+                    "x-directives": [
+                        {
+                            "name": "mask",
+                            "value": "AA"
+                        }
+                    ]
+                },
+                "language_alternate": {
+                    "type": "string",
+                    "description": "alternate language used for documenting metadata",
+                    "pattern": "^[a-z]{2}$",
+                    "x-cols": 6,
+                    "x-directives": [
+                        {
+                            "name": "mask",
+                            "value": "AA"
+                        }
+                    ]
+                },
+                "charset": {
+                    "type": "string",
+                    "description": "full name of the character coding standard used for the metadata set",
+                    "x-cols": 3,
+                    "x-display": "hidden"
+                },
+                "hierarchylevel": {
+                    "type": "string",
+                    "description": "level to which the metadata applies",
+                    "x-cols": 3,
+                    "x-display": "hidden",
+                    "enum": [
+                        "series",
+                        "software",
+                        "featureType",
+                        "model",
+                        "collectionHardware",
+                        "collectionSession",
+                        "nonGeographicDataset",
+                        "propertyType",
+                        "fieldSession",
+                        "dataset",
+                        "service",
+                        "attribute",
+                        "attributeType",
+                        "tile",
+                        "feature",
+                        "dimensionGroup"
+                    ]
+                },
+                "parentidentifier": {
+                    "type": "string",
+                    "description": "file identifier of the metadata to which this metadata is a subset",
+                    "x-cols": 6,
+                    "x-display": "hidden"
+                },
+                "datestamp": {
+                    "$ref": "#/definitions/date_or_datetime_string",
+                    "format": "date-time",
+                    "x-cols": 6,
+                    "x-display": "hidden",
+                    "description": "date that the metadata was created, pygeometa supports specifying the `$date$` or `$datetime$` variable to update the date value at run time"
+                },
+                "dataseturi": {
+                    "type": "string",
+                    "x-display": "hidden",
+                    "description": "Uniform Resource Identifier (URI) of the dataset to which the metadata applies"
+                }
+            },
+            "required": [
+                "identifier",
+                "language",
+                "charset",
+                "hierarchylevel",
+                "datestamp"
+            ]
+        },
+        "spatial": {
+            "type": "object",
+            "title": "Spatial",
+            "properties": {
+                "datatype": {
+                    "type": "string",
+                    "description": "method used to represent geographic information in the dataset",
+                    "x-cols": 6,
+                    "enum": [
+                        "vector",
+                        "grid",
+                        "textTable",
+                        "tin",
+                        "stereoModel",
+                        "video"
+                    ]
+                },
+                "geomtype": {
+                    "type": "string",
+                    "description": "name of point or vector objects used to locate zero-, one-, two-, or threedimensional spatial locations in the dataset",
+                    "x-cols": 6,
+                    "enum": [
+                        "complex",
+                        "composite",
+                        "curve",
+                        "point",
+                        "solid",
+                        "surface"
+                    ]
+                }
+            },
+            "required": [
+                "datatype",
+                "geomtype"
+            ]
+        },
+        "identification": {
+            "type": "object",
+            "title": "Identification",
+            "properties": {
+                "title": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "name by which the cited resource is known"
+                },
+                "abstract": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "brief narrative summary of the content of the resource(s)"
+                },
+                "doi": {
+                    "type": "string",
+                    "description": "Digital Object Identifier (DOI)",
+                    "x-cols": 6
+                },
+                "language": {
+                    "type": "string",
+                    "description": "language(s) used within the dataset. If the dataset is made of numerical values, the dataset language can\nbe set to `missing`, `withheld`, `inapplicable`, `unknown` or `template`",
+                    "x-cols": 3
+                },
+                "charset": {
+                    "type": "string",
+                    "description": "full name of the character coding standard used for the dataset",
+                    "x-cols": 3,
+                    "x-display": "hidden"
+                },
+                "edition": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "version of the cited resource",
+                    "x-cols": 6
+                },
+                "topiccategory": {
+                    "type": "array",
+                    "description": "main theme(s) of the dataset",
+                    "x-cols": 6,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "geoscientificInformation",
+                            "farming",
+                            "elevation",
+                            "utilitiesCommunication",
+                            "oceans",
+                            "boundaries",
+                            "inlandWaters",
+                            "intelligenceMilitary",
+                            "environment",
+                            "location",
+                            "economy",
+                            "planningCadastre",
+                            "biota",
+                            "health",
+                            "imageryBaseMapsEarthCover",
+                            "transportation",
+                            "society",
+                            "structure",
+                            "climatologyMeteorologyAtmosphere"
+                        ]
+                    }
+                },
+                "fees": {
+                    "type": "string",
+                    "description": "fees and terms for retreiving the resource. Include monetary units (as specified in ISO 4217). If there\nare no fees, use the term 'None'",
+                    "x-cols": 6,
+                    "x-display": "hidden"
+                },
+                "accessconstraints": {
+                    "type": "string",
+                    "description": "access constraints applied to assure the protection of privacy or intellectual property, and any special\nrestrictions or limitations on obtaining the resource or metadata. If there are no accessconstraints,\nuse the term 'otherRestrictions'",
+                    "x-cols": 6,
+                    "x-display": "hidden",
+                    "enum": [
+                        "patent",
+                        "otherRestrictions",
+                        "copyright",
+                        "trademark",
+                        "patentPending",
+                        "restricted",
+                        "license",
+                        "intellectualPropertyRights"
+                    ]
+                },
+                "rights": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "name by which the cited resource is known"
+                },
+                "url": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "URL of the dataset to which the metadata applies"
+                },
+                "status": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "the status of the resource(s)",
+                    "x-cols": 4,
+                    "enum": [
+                        "planned",
+                        "historicalArchive",
+                        "completed",
+                        "onGoing",
+                        "underDevelopment",
+                        "required",
+                        "obsolete"
+                    ]
+                },
+                "maintenancefrequency": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "frequency with which modifications and deletions are made to the data after it is first produced",
+                    "x-cols": 4,
+                    "enum": [
+                        "continual",
+                        "daily",
+                        "weekly",
+                        "fortnightly",
+                        "monthly",
+                        "quarterly",
+                        "biannually",
+                        "annually",
+                        "asNeeded",
+                        "irregular",
+                        "notPlanned",
+                        "unknown"
+                    ]
+                },
+                "browsegraphic": {
+                    "type": "string",
+                    "description": "graphic that provides an illustration of the dataset",
+                    "x-cols": 4
+                },
+                "dates": {
+                    "type": "object",
+                    "x-display": "expansion-panels",
+                    "properties": {
+                        "creation": {
+                            "format": "date-time",
+                            "$ref": "#/definitions/date_or_datetime_string",
+                            "x-cols": 4
+                        },
+                        "publication": {
+                            "format": "date-time",
+                            "$ref": "#/definitions/date_or_datetime_string",
+                            "x-cols": 4
+                        },
+                        "revision": {
+                            "format": "date-time",
+                            "$ref": "#/definitions/date_or_datetime_string",
+                            "x-cols": 4
+                        }
+                    }
+                },
+                "extents": {
+                    "type": "object",
+                    "properties": {
+                        "spatial": {
+                            "type": "array",
+                            "x-class": "pa-2",
+                            "description": "The spatial extent of the information in the collection.",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "bbox",
+                                    "crs"
+                                ],
+                                "properties": {
+                                    "bbox": {
+                                        "type": "array",
+                                        "minItems": 4,
+                                        "items": [
+                                            {
+                                                "type": "number",
+                                                "description": "Minimum Longitude",
+                                                "x-class": "pr-2",
+                                                "x-cols": 6
+                                            },
+                                            {
+                                                "type": "number",
+                                                "description": "Minimum Latitue",
+                                                "x-class": "pl-2",
+                                                "x-cols": 6
+                                            },
+                                            {
+                                                "type": "number",
+                                                "description": "Maximum Longitude",
+                                                "x-class": "pr-2",
+                                                "x-cols": 6
+                                            },
+                                            {
+                                                "type": "number",
+                                                "description": "Maximum Latitue",
+                                                "x-class": "pl-2",
+                                                "x-cols": 6
+                                            }
+                                        ]
+                                    },
+                                    "crs": {
+                                        "description": "Coordinate reference system of the coordinates in the spatial extent\n(property `bbox`).",
+                                        "type": "string",
+                                        "default": "http://www.opengis.net/def/crs/EPSG/8.5/4326"
+                                    },
+                                    "name": {
+                                        "description": "Name of the vertical coordinate reference system",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "temporal": {
+                            "description": "The temporal extent of the information in the collection.",
+                            "type": "array",
+                            "x-class": "pa-2",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "begin",
+                                    "trs"
+                                ],
+                                "properties": {
+                                    "begin": {
+                                        "$ref": "#/definitions/date_or_datetime_string",
+                                        "x-cols": 6,
+                                        "x-class": "pr-2",
+                                        "format": "date-time"
+                                    },
+                                    "end": {
+                                        "$ref": "#/definitions/date_or_datetime_string",
+                                        "x-cols": 6,
+                                        "x-class": "pl-2",
+                                        "format": "date-time"
+                                    },
+                                    "trs": {
+                                        "description": "Coordinate reference system of the coordinates in the temporal extent\n(property `interval`). The default reference system is the Gregorian calendar.\nIn the Core this is the only supported temporal coordinate reference system.\nExtensions may support additional temporal coordinate reference systems ",
+                                        "type": "string",
+                                        "default": "http://www.opengis.net/def/uom/ISO-8601/0/Gregorian"
+                                    },
+                                    "resolution": {
+                                        "description": " Minimum time period resolvable in the dataset, as an ISO 8601 duration",
+                                        "pattern": "^[A-Z]\\d*[A-Z]$",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": [
+                        "spatial"
+                    ]
+                },
+                "keywords": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^.*": {
+                            "type": "object",
+                            "description": "The key name indicates the type of keywords (either schema specific\nof user defined).  The values are the keywords, type, and codelists.",
+                            "properties": {
+                                "keywords": {
+                                    "$ref": "#/definitions/i18n_array",
+                                    "description": "category keywords"
+                                },
+                                "keywords_type": {
+                                    "type": "string",
+                                    "description": "subject matter used to group similar keywords",
+                                    "enum": [
+                                        "discipline",
+                                        "place",
+                                        "stratum",
+                                        "temporal",
+                                        "theme"
+                                    ]
+                                },
+                                "keywords_codelist": {
+                                    "type": "string",
+                                    "description": "specific code list URL (for advanced use cases, else the default\nis as per the given specified schema)"
+                                },
+                                "vocabulary": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "$ref": "#/definitions/i18n_string",
+                                            "description": "name of the source of keywords"
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "description": "URL of source of keywords"
+                                        }
+                                    },
+                                    "required": [
+                                        "name"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "language",
+                "charset",
+                "title",
+                "abstract",
+                "topiccategory",
+                "fees",
+                "accessconstraints",
+                "rights",
+                "url",
+                "status",
+                "maintenancefrequency",
+                "dates",
+                "extents",
+                "keywords"
+            ]
+        },
+        "contact": {
+            "type": "object",
+            "title": "Contact Information",
+            "description": "MCFs can have 1..n contact sections as required using nesting.",
+            "properties": {
+                "pointOfContact": {
+                    "title": "Point of Contact",
+                    "description": "`pointOfContact` is minimally required contact information.",
+                    "$ref": "#/definitions/contact"
+                }
+            },
+            "required": [
+                "pointOfContact"
+            ]
+        },
+        "dataquality": {
+            "type": "object",
+            "title": "Data quality",
+            "properties": {
+                "scope": {
+                    "type": "object",
+                    "x-display": "hidden",
+                    "properties": {
+                        "level": {
+                            "type": "string",
+                            "description": "hierarchical level of the data specificed by the scope"
+                        }
+                    }
+                },
+                "lineage": {
+                    "type": "object",
+                    "properties": {
+                        "statement": {
+                            "type": "string",
+                            "x-display": "textarea",
+                            "description": "general explanationn of the data producer's knowledge about the lineage of a dataset"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "mcf",
+        "metadata",
+        "spatial",
+        "identification",
+        "contact",
+        "distribution"
+    ],
+    "definitions": {
+        "any_type": {
+            "type": [
+                "string",
+                "number",
+                "integer",
+                "object",
+                "array",
+                "boolean"
+            ]
+        },
+        "i18n_array": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*_\\w{2}$": {
+                            "allOf": [
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "i18n_string": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*_\\w{2}$": {
+                            "allOf": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "date_or_datetime_string": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "format": "date",
+                    "x-class": "px-2",
+                    "x-props": {
+                        "appendIcon": "mdi-calendar"
+                    }
+                },
+                {
+                    "type": "string",
+                    "format": "date-time",
+                    "x-class": "px-2",
+                    "x-props": {
+                        "appendIcon": "mdi-calendar"
+                    }
+                }
+            ]
+        },
+        "contact": {
+            "type": "object",
+            "properties": {
+                "organization": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "name of the responsible organization"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "on-line information that can be used to contact the individual or organization"
+                },
+                "individualname": {
+                    "$ref": "#/definitions/i18n_string",
+                    "x-cols": 6,
+                    "description": "name of the responsible person-surname"
+                },
+                "positionname": {
+                    "$ref": "#/definitions/i18n_string",
+                    "x-cols": 6,
+                    "description": "role or position of the responsible person"
+                },
+                "phone": {
+                    "type": "string",
+                    "x-cols": 6,
+                    "description": "telephone number by which individuals can speak to the responsible organization or individual"
+                },
+                "fax": {
+                    "type": "string",
+                    "x-cols": 6,
+                    "description": "telephone number of a facsimile machine for the responsible organization or individual"
+                },
+                "address": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "address line for the location (as described in ISO 11180)"
+                },
+                "city": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "city of the location"
+                },
+                "administrativearea": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "city of the location"
+                },
+                "postalcode": {
+                    "type": "string",
+                    "description": "ZIP or other postal code"
+                },
+                "country": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "country of the physical address"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "address of the electronic mailbox of the responsible organization or individual"
+                },
+                "hoursofservice": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "time period (including time zone) when individuals can contact the organization or individual"
+                },
+                "contactinstructions": {
+                    "$ref": "#/definitions/i18n_string",
+                    "description": "supplementalinstructions on how or when to contact the individual or organization"
+                }
+            },
+            "required": [
+                "organization",
+                "url",
+                "individualname",
+                "positionname",
+                "phone",
+                "fax",
+                "address",
+                "city",
+                "administrativearea",
+                "postalcode",
+                "country",
+                "email"
+            ]
+        }
+    }
+}

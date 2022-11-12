@@ -1,0 +1,31 @@
+{
+  "language": "Français",
+  "code": "fr",
+  "navigation": {
+    "home": "Page d'accueil",
+    "datasets": "Ensemble de données ",
+    "admin": "Administratrice",
+    "services": "Services de données",
+    "documentation": "Documentation",
+    "monitoring": "Surveillance",
+    "stations": "Stations"
+  },
+  "util": {
+    "token": "Jeton d'accès",
+    "cancel": "Annuler",
+    "save": "Conserver"
+  },
+  "footer": {
+    "powered_by": "Alimenté par"
+  },
+  "datasets": {
+    "topic": "Sujet",
+    "messages": "Messagerie WIS 2.0",
+    "oafeat": "Observations",
+    "oarec": "OGC API - Record",
+    "dm": "Métadonnées de découverte",
+    "mcf": "Fichier de contrôle des métadonnées",
+    "edit": "Éditer",
+    "mqp": "PubSub"
+  }
+}
