@@ -1,0 +1,31 @@
+{
+  "language": "Español",
+  "code": "es",
+  "navigation": {
+    "home": "Página Principal",
+    "datasets": "Conjunto de datos",
+    "admin": "Administración",
+    "services": "Servicios de datos",
+    "documentation": "Documentación",
+    "monitoring": "Vigilancia",
+    "stations": "Estaciónes"
+  },
+  "util": {
+    "token": "Autentificador",
+    "cancel": "Anular",
+    "save": "Guardar"
+  },
+  "footer": {
+    "powered_by": "Desarrollada por"
+  },
+  "datasets": {
+    "topic": "Tema",
+    "messages": "Mensajes del WIS 2.0",
+    "oafeat": "Observaciones",
+    "oarec": "OGC API - Record",
+    "dm": "Metadatos de descubrimiento",
+    "mcf": "Archivo de control de metadatos",
+    "edit": "Editar",
+    "mqp": "PubSub"
+  }
+}
