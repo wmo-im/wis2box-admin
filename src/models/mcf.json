@@ -18,17 +18,22 @@
         },
         "wis2box": {
             "type": "object",
-            "title": "wis2box",
-            "description": "WIS 2.0 metadata",
+            "title": "Topic",
+            "description": "WIS 2.0 Metadata",
             "properties": {
                 "topic_hierarchy": {
                     "type": "string",
                     "pattern": "^[a-z]{3}\\.[_a-z]+\\.(data|metadata|reports)\\.(core|reccomended)\\.[\\w]+\\.[\\w-]+\\.[\\w]+$",
-                    "description": "unique identifier for this metadata file"
+                    "description": "Unique identifier for this metadata file.",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid topic hierarchy."
+                        }
+                    }
                 },
                 "country": {
                     "type": "string",
-                    "description": "Lower case representation of ISO3166 3-letter code. Includes extensions for partner organizations",
+                    "description": "Lower case representation of ISO3166 3-letter code. Includes extensions for partner organizations.",
                     "pattern": "^[a-z]{3}$",
                     "x-cols": 2,
                     "x-directives": [
@@ -36,23 +41,33 @@
                             "name": "mask",
                             "value": "AAA"
                         }
-                    ]
+                    ],
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid 3-letter code."
+                        }
+                    }
                 },
                 "center_id": {
                     "type": "string",
                     "x-cols": 4,
-                    "description": "Acronym as specified by member"
+                    "description": "Agency acronym, as specified by member."
                 },
                 "data_category": {
                     "type": "string",
                     "x-cols": 4,
-                    "description": "Earth system discipline subcategory"
+                    "description": "Earth system discipline subcategory."
                 },
                 "retention": {
                     "type": "string",
                     "pattern": "^[A-Z]\\d*[A-Z]$",
                     "x-cols": 2,
-                    "description": "data retention"
+                    "description": "data retention",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid retention option."
+                        }
+                    }
                 }
             },
             "required": [
@@ -66,15 +81,15 @@
         "metadata": {
             "type": "object",
             "title": "Metadata",
-            "description": "unique identifier for this metadata file",
+            "description": "Unique identifier for this metadata file.",
             "properties": {
                 "identifier": {
                     "type": "string",
-                    "description": "unique identifier for this metadata file, usually the same as the topic"
+                    "description": "Unique identifier for this metadata file, usually the same as the topic hierarchy."
                 },
                 "language": {
                     "type": "string",
-                    "description": "primary language used for documenting metadata, the metadata records themselves can be provided in multiple languages nonetheless",
+                    "description": "Two-letter abbreviation for primary language used in documenting metadata. (The metadata records themselves can be provided in multiple languages nonetheless.)",
                     "pattern": "^[a-z]{2}$",
                     "x-cols": 6,
                     "x-directives": [
@@ -82,11 +97,16 @@
                             "name": "mask",
                             "value": "AA"
                         }
-                    ]
+                    ],
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid language abbreviation."
+                        }
+                    }
                 },
                 "language_alternate": {
                     "type": "string",
-                    "description": "alternate language used for documenting metadata",
+                    "description": "Two-letter abbreviation for alternative language used in documenting metadata.",
                     "pattern": "^[a-z]{2}$",
                     "x-cols": 6,
                     "x-directives": [
@@ -94,7 +114,12 @@
                             "name": "mask",
                             "value": "AA"
                         }
-                    ]
+                    ],
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid language abbreviation."
+                        }
+                    }
                 },
                 "charset": {
                     "type": "string",

@@ -1,6 +1,6 @@
 <template id="edit-view">
   <div class="edit-view">
-    <v-card class="mx-auto" width="90%">
+    <v-card>
       <mcf-form :topic="topic" />
     </v-card>
   </div>

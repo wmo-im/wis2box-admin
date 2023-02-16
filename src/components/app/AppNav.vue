@@ -1,6 +1,6 @@
 <template id="app-nav">
   <div class="app-nav">
-    <v-app-bar flat color="#FFFFFF">
+    <v-app-bar flat class="mb-2" color="#FFFFFF">
       <v-btn-toggle borderless>
         <v-hover
           v-for="(item, i) in items"
