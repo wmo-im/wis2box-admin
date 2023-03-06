@@ -1,0 +1,431 @@
+{
+    "version": 1.0,
+    "type": "object",
+    "properties": {
+        "wis2box": {
+            "type": "object",
+            "title": "WIS2",
+            "description": "WIS2 Identification Information",
+            "properties": {
+                "country": {
+                    "type": "string",
+                    "description": "Lower case representation of ISO3166 3-letter code.",
+                    "pattern": "^[a-z]{3}$",
+                    "x-cols": 4,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid 3-letter code."
+                        }
+                    }
+                },
+                "centre_id": {
+                    "type": "string",
+                    "x-cols": 4,
+                    "description": "Agency acronym, as specified by member."
+                },
+                "retention": {
+                    "type": "string",
+                    "description": "Minimum length of time data should be retained in WIS2.",
+                    "default": "30d",
+                    "enum": [
+                        "1h",
+                        "1d",
+                        "7d",
+                        "14d",
+                        "30d"
+                    ],
+                    "x-cols": 4,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid retention option."
+                        }
+                    }
+                },
+                "topic_hierarchy": {
+                    "type": "string",
+                    "pattern": "^[a-z]{3}\\.[_a-z]+\\.(data|metadata|reports)\\.(core|reccomended)\\.[\\w]+\\.[\\w-]+[\\.\\w]*$",
+                    "description": "Unique identifier for this metadata file.",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid topic hierarchy."
+                        }
+                    }
+                }
+            },
+            "required": [
+                "topic_hierarchy",
+                "country",
+                "centre_id",
+                "retention"
+            ]
+        },
+        "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "Metadata Information",
+            "properties": {
+                "identifier": {
+                    "type": "string",
+                    "description": "Unique identifier for this file. (Usually similar to the topic hierarchy.)",
+                    "pattern": "^urn:x-wmo:md:[a-z]{3}:[a-z0-9_-]+:[a-z0-9_-]+:[a-z0-9_-]+[a-z0-9:]*$",
+                    "default": "urn:x-wmo:md:",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid unique identifier."
+                        }
+                    }
+                },
+                "hierarchylevel": {
+                    "type": "string",
+                    "description": "Level to which the metadata applies.",
+                    "enum": [
+                        "series",
+                        "software",
+                        "featureType",
+                        "model",
+                        "collectionHardware",
+                        "collectionSession",
+                        "nonGeographicDataset",
+                        "propertyType",
+                        "fieldSession",
+                        "dataset",
+                        "service",
+                        "attribute",
+                        "attributeType",
+                        "tile",
+                        "feature",
+                        "dimensionGroup"
+                    ]
+                }
+            },
+            "required": [
+                "identifier",
+                "hierarchylevel"
+            ]
+        },
+        "identification": {
+            "type": "object",
+            "title": "Data",
+            "description": "Data Information",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "Name of data."
+                },
+                "abstract": {
+                    "type": "string",
+                    "description": "Brief description of data."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "URI where data can be accessed.",
+                    "x-cols": 9,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid URI."
+                        }
+                    }
+                },
+                "wmo_data_policy": {
+                    "type": "string",
+                    "description": "Priority of data within WMO.",
+                    "x-cols": 3,
+                    "enum": [
+                        "core",
+                        "recommended"
+                    ]
+                },
+                "wmo_keywords": {
+                    "type": "array",
+                    "description": "WMO data keywords.",
+                    "x-cols": 6,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "weatherObservations",
+                            "weatherForecasts",
+                            "meteorology",
+                            "hydrology",
+                            "climatology",
+                            "landMeterorologyClimate",
+                            "synopticMeteorology",
+                            "marineMeteorology",
+                            "agriculturalMeteorology",
+                            "aerology",
+                            "marineAerology",
+                            "oceanography",
+                            "landHydrology",
+                            "rocketSounding",
+                            "pollution",
+                            "waterPollution",
+                            "landWaterPollution",
+                            "seaPollution",
+                            "landPollution",
+                            "airPollution",
+                            "glaciology",
+                            "actinometry",
+                            "satelliteObservations",
+                            "airplaneObservation",
+                            "observationPlatform",
+                            "spaceWeather",
+                            "atmosphericComposition",
+                            "radiation"
+                        ]
+                    }
+                },
+                "search_keywords": {
+                    "type": "array",
+                    "description": "Search keywords for data.",
+                    "x-cols": 6,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "title",
+                "abstract",
+                "url",
+                "wmo_data_policy",
+                "wmo_keywords",
+                "search_keywords"
+            ]
+        },
+        "poc": {
+            "type": "object",
+            "title": "Contact",
+            "description": "Point of Contact Information",
+            "properties": {
+                "organization": {
+                    "type": "string",
+                    "description": "Organization name."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "Organization website."
+                },
+                "individualname": {
+                    "type": "string",
+                    "description": "Full name.",
+                    "x-cols": 6
+                },
+                "positionname": {
+                    "type": "string",
+                    "description": "Position held.",
+                    "x-cols": 6
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Full international phone number with exit code.",
+                    "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid phone number."
+                        }
+                    }
+                },
+                "fax": {
+                    "type": "string",
+                    "description": "Full international fax number with exit code.",
+                    "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid fax number."
+                        }
+                    }
+                },
+                "address": {
+                    "type": "string",
+                    "description": "Full mailing address."
+                },
+                "city": {
+                    "type": "string",
+                    "description": "Mailing city.",
+                    "x-cols": 6
+                },
+                "postalcode": {
+                    "type": "string",
+                    "description": "Mailing postal code.",
+                    "x-cols": 6
+                },
+                "administrativearea": {
+                    "type": "string",
+                    "description": "Mailing state or region.",
+                    "x-cols": 6
+                },
+                "country": {
+                    "type": "string",
+                    "description": "Mailing country.",
+                    "x-cols": 6
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Contact email address.",
+                    "pattern": "^[A-Za-z0-9\\._-]+@[A-Za-z0-9-]+\\.[A-Za-z0-9\\.-]+$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid email."
+                        }
+                    }
+                },
+                "hoursofservice": {
+                    "type": "string",
+                    "description": "Normal weekday contact hours. (In 24hr format with timezone code.)",
+                    "pattern": "^[0-9]{4}h\\s-\\s[0-9]{4}h\\s[A-Z0-9]{3}$",
+                    "default": "0900h - 1700h UTC",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid time range."
+                        }
+                    }
+                },
+                "contactinstructions": {
+                    "type": "string",
+                    "description": "Preffered contact method.",
+                    "x-cols": 6,
+                    "enum": [
+                        "email",
+                        "phone",
+                        "fax"
+                    ]
+                }
+            },
+            "required": [
+                "organization",
+                "url",
+                "individualname",
+                "positionname",
+                "phone",
+                "city",
+                "administrativearea",
+                "country",
+                "email",
+                "hoursofservice",
+                "contactinstructions"
+            ]
+        },
+        "distrib": {
+            "type": "object",
+            "title": "Distributor",
+            "description": "Distributor Contact Information",
+            "properties": {
+                "duplicate_info": {
+                    "type": "boolean",
+                    "description": "Use point of contact information as distributor information too."
+                },
+                "organization": {
+                    "type": "string",
+                    "description": "Organization name."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "Organization website."
+                },
+                "individualname": {
+                    "type": "string",
+                    "description": "Full name.",
+                    "x-cols": 6
+                },
+                "positionname": {
+                    "type": "string",
+                    "description": "Position held.",
+                    "x-cols": 6
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Full international phone number with exit code.",
+                    "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid phone number."
+                        }
+                    }
+                },
+                "fax": {
+                    "type": "string",
+                    "description": "Full international fax number with exit code.",
+                    "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid fax number."
+                        }
+                    }
+                },
+                "address": {
+                    "type": "string",
+                    "description": "Full mailing address."
+                },
+                "city": {
+                    "type": "string",
+                    "description": "Mailing city.",
+                    "x-cols": 6
+                },
+                "postalcode": {
+                    "type": "string",
+                    "description": "Mailing postal code.",
+                    "x-cols": 6
+                },
+                "administrativearea": {
+                    "type": "string",
+                    "description": "Mailing state or region.",
+                    "x-cols": 6
+                },
+                "country": {
+                    "type": "string",
+                    "description": "Mailing country.",
+                    "x-cols": 6
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Contact email address.",
+                    "pattern": "^[A-Za-z0-9\\._-]+@[A-Za-z0-9-]+\\.[A-Za-z0-9\\.-]+$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid email."
+                        }
+                    }
+                },
+                "hoursofservice": {
+                    "type": "string",
+                    "description": "Normal weekday contact hours. (In 24hr format, with timezone code.)",
+                    "pattern": "^[0-9]{4}h\\s-\\s[0-9]{4}h\\s[A-Z0-9]{3}$",
+                    "default": "0900h - 1700h UTC",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid time range."
+                        }
+                    }
+                },
+                "contactinstructions": {
+                    "type": "string",
+                    "description": "Preffered contact method.",
+                    "x-cols": 6,
+                    "enum": [
+                        "email",
+                        "phone",
+                        "fax"
+                    ]
+                }
+            },
+            "required": [
+                "organization",
+                "url",
+                "individualname",
+                "positionname",
+                "phone",
+                "city",
+                "administrativearea",
+                "country",
+                "email",
+                "hoursofservice",
+                "contactinstructions"
+            ]
+        }
+    }
+}

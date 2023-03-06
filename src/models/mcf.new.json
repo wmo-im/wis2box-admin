@@ -1,0 +1,156 @@
+{
+   "type":"object",
+   "properties":{
+      "properties":{
+         "type":"object",
+         "description":"Data and Source Information",
+         "properties":{
+            "title":{
+               "type":"string",
+               "description":"Title of dataset."
+            },
+            "description":{
+               "type":"string",
+               "description":"Description of dataset."
+            },
+            "concepts":{
+               "type":"array",
+               "description":"Tags describing data contents.",
+               "items":{
+                  "type":"string"
+               }
+            },
+            "providers":{
+               "type":"array",
+               "items":{
+                  "type":"object",
+                  "properties":{
+                     "name":{
+                        "type":"string",
+                        "description":"Name of organization."
+                     },
+                     "individual":{
+                        "type":"string",
+                        "description":"Person representing organization."
+                     },
+                     "positionName":{
+                        "type":"string",
+                        "description":"Position held in organization."
+                     },
+                     "roles":{
+                        "type":"array",
+                        "description":"Roles in relation to dataset.",
+                        "items":{
+                           "type":"string"
+                        }
+                     },
+                     "contactInfo":{
+                        "type":"object",
+                        "description":"Contact information for person.",
+                        "properties":{
+                           "phone":{
+                              "type":"string",
+                              "description":"Full international phone number."
+                           },
+                           "email":{
+                              "type":"string",
+                              "description":"Email address.",
+                              "pattern":"^[A-Za-z0-9\\._-]+@[A-Za-z0-9-]+\\.[A-Za-z0-9]+$"
+                           },
+                           "address":{
+                              "type":"object",
+                              "description":"Full mailing address.",
+                              "properties":{
+                                 "deliveryPoint":{
+                                    "type":"string",
+                                    "description":"Full street address."
+                                 },
+                                 "city":{
+                                    "type":"string",
+                                    "description":"City name."
+                                 },
+                                 "administrativeArea":{
+                                    "type":"string",
+                                    "description":"Abbreviated state or region.",
+                                    "pattern":"^[A-Z0-9]{2,}$"
+                                 },
+                                 "postalCode":{
+                                    "type":"string",
+                                    "description":"Valid postal code."
+                                 },
+                                 "country":{
+                                    "type":"string",
+                                    "description":"Full country name."
+                                 }
+                              }
+                           },
+                           "hoursOfService":{
+                              "type":"string",
+                              "description":"Normal contactable hours on weekdays.",
+                              "pattern":"^[0-9]{4}h\\s\\-\\s[0-9]{4}h\\s[A-Z]{3}$"
+                           },
+                           "contactInstructions":{
+                              "type":"string",
+                              "description":"Preferred contact method.",
+                              "pattern":"^phone|email$"
+                           },
+                           "url":{
+                              "type":"string",
+                              "description":"Website with additional information about organization."
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "language":{
+               "type":"string",
+               "description":"Primary language of dataset.",
+               "pattern":"^[a-z]{2}$"
+            },
+            "rights":{
+               "type":"string",
+               "description":"Description of usage rights."
+            },
+            "formats":{
+               "type":"array",
+               "description":"Data-access formats.",
+               "items":{
+                  "type":"string"
+               }
+            }
+         }
+      },
+      "links":{
+         "type":"array",
+         "description":"Links to dataset resources.",
+         "items":{
+            "type":"object",
+            "properties":{
+               "rel":{
+                  "type":"string",
+                  "description":"Relation to dataset.",
+                  "pattern":"^download|items$"
+               },
+               "href":{
+                  "type":"string",
+                  "description":"Full URI."
+               },
+               "type":{
+                  "type":"string",
+                  "description":"Mimetype of data accessible at link."
+               },
+               "hreflang":{
+                  "type":"string",
+                  "description":"Primary language of data at link.",
+                  "pattern":"^[a-z]{2}$"
+               },
+               "title":{
+                  "type":"string",
+                  "description":"Name of link."
+               }
+            }
+         }
+      }
+   }
+}
