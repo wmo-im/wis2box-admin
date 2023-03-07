@@ -1,22 +1,31 @@
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
-  publicPath: "/admin",
+    publicPath: "/admin",
 
-  transpileDependencies: ["vuetify", "@koumoul/vjsf"],
+    transpileDependencies: ["vuetify", "@koumoul/vjsf"],
 
-  pluginOptions: {
-    i18n: {
-      locale: "en",
-      fallbackLocale: "fr",
-      localeDir: "locales",
-      enableInSFC: true,
-      includeLocales: false,
-      enableBridge: true
-    }
-  },
+    pluginOptions: {
+        i18n: {
+            locale: "en",
+            fallbackLocale: "fr",
+            localeDir: "locales",
+            enableInSFC: true,
+            includeLocales: false,
+            enableBridge: true
+        }
+    },
 
-  configureWebpack: {
-    plugins: [new NodePolyfillPlugin()]
-  }
+    configureWebpack: {
+        plugins: [new NodePolyfillPlugin()],
+        module: {
+            rules: [
+                {
+                    test: /\.(csv|tsv)$/i,
+                    use: ['csv-loader'],
+                },
+            ]
+        }
+    },
+
 };
