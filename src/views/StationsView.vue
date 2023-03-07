@@ -15,18 +15,16 @@
       <v-spacer/>
       <v-spacer/>
       <edit-modal
-          :edited-id="editedId"
-          :form-content="formContent"
+          :form-content="stationData"
+          :station-status="stationStatus"
           :dialog.sync="dialog"
+          :submit-func="handleUpdate"
           @open-dialog="
-          editedId = 999;
           dialog = true;
-          formContent=self.formContent;
         "
           @close-dialog="
-          editedId = null;
           dialog = false;
-          formContent={}
+          stationData={}
         "
       />
       <v-data-table :headers="headers" :items="stations" :search="search">
@@ -35,69 +33,12 @@
             {{ item.name }}
           </a>
         </template>
-        <template v-slot:item.status="{ item }">{{stationStatus[item.status]}}</template>
+        <template v-slot:item.status="{ item }">{{stationStatus.find(x=>x.value === item.status).title}}</template>
         <template v-slot:item.actionControls="props">
           <v-btn class="mx-2" fab small @click="openDialog(props.item.id)">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </template>
-        <!--        <template v-slot:item="row">-->
-        <!--          <tr>-->
-        <!--&lt;!&ndash;            <td>{{ row.item.no }}</td>&ndash;&gt;-->
-        <!--&lt;!&ndash;            <td>{{ row.item.result }}</td>&ndash;&gt;-->
-        <!--            <td>-->
-        <!--              <v-btn class="mx-2" fab dark small color="pink" @click="onButtonClick(row.item)">-->
-        <!--                <v-icon dark>mdi-heart</v-icon>-->
-        <!--              </v-btn>-->
-        <!--            </td>-->
-        <!--          </tr>-->
-        <!--        </template>-->
-
-        <!--        <template v-slot:item.station_name="props">-->
-        <!--          <v-edit-dialog :return-value.sync="props.item.station_name" large>-->
-        <!--            {{ props.item.station_name }}-->
-        <!--            <template v-slot:input>-->
-        <!--              <v-text-field-->
-        <!--                v-model="props.item.station_name"-->
-        <!--                label="Edit"-->
-        <!--                single-line-->
-        <!--                counter-->
-        <!--              ></v-text-field>-->
-        <!--            </template>-->
-        <!--          </v-edit-dialog>-->
-        <!--        </template>-->
-        <!--        <template v-slot:item.wigos_station_identifier="props">-->
-        <!--          <v-edit-dialog-->
-        <!--            :return-value.sync="props.item.wigos_station_identifier"-->
-        <!--            large-->
-        <!--          >-->
-        <!--            {{ props.item.wigos_station_identifier }}-->
-        <!--            <template v-slot:input>-->
-        <!--              <v-text-field-->
-        <!--                v-model="props.item.wigos_station_identifier"-->
-        <!--                label="Edit"-->
-        <!--                single-line-->
-        <!--                counter-->
-        <!--              ></v-text-field>-->
-        <!--            </template>-->
-        <!--          </v-edit-dialog>-->
-        <!--        </template>-->
-        <!--        <template v-slot:item.traditional_station_identifier="props">-->
-        <!--          <v-edit-dialog-->
-        <!--            :return-value.sync="props.item.traditional_station_identifier"-->
-        <!--            large-->
-        <!--          >-->
-        <!--            {{ props.item.traditional_station_identifier }}-->
-        <!--            <template v-slot:input>-->
-        <!--              <v-text-field-->
-        <!--                v-model="props.item.traditional_station_identifier"-->
-        <!--                label="Edit"-->
-        <!--                single-line-->
-        <!--                counter-->
-        <!--              ></v-text-field>-->
-        <!--            </template>-->
-        <!--          </v-edit-dialog>-->
-        <!--        </template>-->
       </v-data-table>
     </v-card>
   </div>
@@ -150,6 +91,7 @@ const stationHeaders = [
   //   "text": "Id",
   //   "value": "id"
   // },
+  //   for edit icon
   {'text': '', value: 'actionControls', 'sortable': false}
 ]
 
@@ -165,19 +107,19 @@ export default {
       headers: [],
       stations: [],
       dialog: false,
-      editedId: null,
-      formContent: {},
+      // formContent: {},
+      stationData: {},
       // todo - get dynamically from https://codes.wmo.int/wmdr/_ReportingStatus
-      stationStatus: {
-        'closed': 'Closed',
-        'nonReporting': 'Non-reporting',
-        'operational': 'Operational',
-        'partlyOperational': 'Partly operational',
-        'planned': 'Planned',
-        'preOperational': 'Pre-operational',
-        'standBy': 'Stand-by',
-        'unknown': 'unknown'
-      }
+      stationStatus: [
+        {value: 'closed', title: 'Closed'},
+        {value: 'nonReporting', title: 'Non-reporting'},
+        {value: 'operational', title: 'Operational'},
+        {value: 'partlyOperational', title: 'Partly operational'},
+        {value: 'planned', title: 'Planned'},
+        {value: 'preOperational', title: 'Pre-operational'},
+        {value: 'standBy', title: 'Stand-by'},
+        {value: 'unknown', title: 'unknown'}
+      ]
     };
   },
   async created() {
@@ -242,6 +184,10 @@ export default {
     // });
   },
   methods: {
+    handleUpdate(updateData){
+      console.log('handleUpdate')
+      console.log(updateData)
+    },
     parseCSV(csvString) {
       var self = this;
       this.headers = [];
@@ -262,7 +208,9 @@ export default {
     openDialog(station_id) {
       console.log(station_id);
 
-      this.formContent = this.stations.find(s => {return s.id === station_id})
+      // this.formContent = this.stations.find(s => {return s.id === station_id})
+      const stn = this.stations.find(s => {return s.id === station_id})
+      this.stationData = Object.assign({}, stn)
       this.dialog = true
 
     },
@@ -275,7 +223,8 @@ export default {
       // });
       // self.headers = [...stationHeaders, ...actionControls]
       self.headers = stationHeaders
-      self.stations = stationsCollection.features.map(station => station.properties)
+      self.stations = stationsCollection.features.map(station => {return {...station.properties, ...station.geometry}})
+      // self.stations = stationsCollection.features
     }
   },
 };
