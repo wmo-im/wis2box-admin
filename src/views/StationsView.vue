@@ -48,12 +48,14 @@
 import {clean} from "@/scripts/helpers.js";
 import {parse} from "csv-parse";
 // import stations_list from "@/metadata/station/station_list.csv";
-import form_dialog from "../dialogs/form_dialog.vue"
+import FormDialog from "../dialogs/FormDialog.vue"
 // import {stat} from "@babel/core/lib/gensync-utils/fs";
 
 // let baseURL = window.VUE_ADMIN_URL;
 let oAPI = window.VUE_APP_OAPI
 // const actionControls = [{'text': '', value: 'actionControls', 'sortable': false}]
+const stations_url = oAPI + "/collections/stations/items?f=json"
+
 const stationHeaders = [
   {
     "text": "Name",
@@ -97,7 +99,7 @@ const stationHeaders = [
 
 
 export default {
-  components: {"edit-modal": form_dialog},
+  components: {"edit-modal": FormDialog},
   name: "StationsView",
   template: "#stations-view",
 
@@ -109,7 +111,7 @@ export default {
       dialog: false,
       // formContent: {},
       stationData: {},
-      // todo - get dynamically from https://codes.wmo.int/wmdr/_ReportingStatus
+      // todo - get dynamically? from https://codes.wmo.int/wmdr/_ReportingStatus
       stationStatus: [
         {value: 'closed', title: 'Closed'},
         {value: 'nonReporting', title: 'Non-reporting'},
@@ -123,70 +125,38 @@ export default {
     };
   },
   async created() {
-    const self = this;
+    // const self = this;
     // var url = `/metadata/station/station_list.csv`;
     // var otherurl = `${baseURL}/metadata/station/station_list.csv`;
     // var url = "http://localhost:8080/admin/station_list.csv";
-    const stations_url = oAPI + "/collections/stations/items?f=json&lang=en-US&limit=10&skipGeometry=false&offset=0"
-    await this.$http({
-      method: 'get',
-      url: stations_url,
-      // headers: {'Content-Type': 'application/json'}
-    })
-        .then(function (response) {
-          console.log(response)
-          if (response.data.features) {
-          self.parseStations(response.data)
-          } else {
-            console.log('error getting stations collection', response)
-          }
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-
-    // await this.$http({
-    //   method: "get",
-    //   url: url,
-    // })
-    //   .then(function (response) {
-    //     // handle success
-    //     self.parseCSV(response.data);
-    //   })
-    //   .catch(function (error) {
-    //     // handle error
-    //     console.log(error);
-    //   });
-    // self.parseCSV(stations)
-    // const csv_data = parse(stations, {bom: true, delimiter: ",", encoding: "utf-8"})
-    // console.log(csv_data)
-    // console.log(stations_list)
-    // self.parseCSV([stations]);
-    // var self = this;
-    // self.headers = [];
-
-
-    // let headers;
-    // headers = stations_list.shift();
-    // self.stations = stations_list
-    // headers = headers.map(function (x) {
-    //   return {text: clean(x), value: x};
-    // });
-    // // headers.push(self.actionControls)
-    // self.headers = [...headers, ...self.actionControls]
-    // // self.headers = Array.from(headers);
-    // self.stations = stations_list.map(function (row) {
-    //   var parsed = {};
-    //   for (var i = 0; i < headers.length; i++) {
-    //     parsed[headers[i].value] = row[i];
-    //   }
-    //   return parsed;
-    // });
+    await this.loadStations()
   },
   methods: {
-    handleUpdate(updateData){
+    async loadStations(){
+      console.log('loadStations')
+      const self = this
+      await this.$http({
+        method: 'get',
+        url: stations_url,
+        // headers: {'Content-Type': 'application/json'}
+      })
+          .then(function (response) {
+            console.log(response)
+            if (response.data.features) {
+              self.parseStations(response.data)
+            } else {
+              console.log('error getting stations collection', response)
+            }
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+    },
+    handleUpdate(action, updateData){
       console.log('handleUpdate')
+      console.log(action)
       console.log(updateData)
+      this.loadStations();
     },
     parseCSV(csvString) {
       var self = this;
@@ -206,13 +176,9 @@ export default {
       });
     },
     openDialog(station_id) {
-      console.log(station_id);
-
-      // this.formContent = this.stations.find(s => {return s.id === station_id})
       const stn = this.stations.find(s => {return s.id === station_id})
       this.stationData = Object.assign({}, stn)
       this.dialog = true
-
     },
     parseStations(stationsCollection) {
       console.log('parseStations')
