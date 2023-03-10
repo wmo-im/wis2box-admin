@@ -141,6 +141,7 @@ export default {
         // headers: {'Content-Type': 'application/json'}
       })
           .then(function (response) {
+            console.log('...loaded stations')
             console.log(response)
             if (response.data.features) {
               self.parseStations(response.data)
@@ -152,11 +153,15 @@ export default {
             console.log(error)
           })
     },
-    handleUpdate(action, updateData){
+    async handleUpdate(action, updateData){
       console.log('handleUpdate')
       console.log(action)
       console.log(updateData)
-      this.loadStations();
+      if (action === 'delete') {
+        // todo - retry until count is decremented by 1 ?? why is the loadStations beating the Delete??
+        await this.deleteStation(updateData.id).then(setTimeout(this.loadStations, 1000))
+      }
+      // this.loadStations();
     },
     parseCSV(csvString) {
       var self = this;
@@ -191,7 +196,23 @@ export default {
       self.headers = stationHeaders
       self.stations = stationsCollection.features.map(station => {return {...station.properties, ...station.geometry}})
       // self.stations = stationsCollection.features
-    }
+    },
+    async deleteStation(stationID){
+      console.log('deleteStation')
+      // const self = this
+      await this.$http({
+        method: 'delete',
+        url: oAPI+`/collections/stations/items/${stationID}`,
+        // headers: {'Content-Type': 'application/json'}
+      })
+          .then(function (response) {
+            console.log('...deleted station')
+            console.log(response)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+    },
   },
 };
 </script>
