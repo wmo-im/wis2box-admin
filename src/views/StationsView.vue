@@ -17,6 +17,7 @@
       <edit-modal
           :form-content="stationData"
           :station-status="stationStatus"
+          :facility-types="facilityTypes"
           :dialog.sync="dialog"
           :submit-func="handleUpdate"
           @open-dialog="
@@ -34,6 +35,7 @@
           </a>
         </template>
         <template v-slot:item.status="{ item }">{{stationStatus.find(x=>x.value === item.status).title}}</template>
+        <template v-slot:item.facility_type="{ item }">{{facilityTypes.find(x=>x.title === item.facility_type).title}}</template>
         <template v-slot:item.actionControls="props">
           <v-btn class="mx-2" fab small @click="openDialog(props.item.id)">
             <v-icon>mdi-pencil</v-icon>
@@ -53,7 +55,6 @@ import FormDialog from "../dialogs/FormDialog.vue"
 
 // let baseURL = window.VUE_ADMIN_URL;
 let oAPI = window.VUE_APP_OAPI
-// const actionControls = [{'text': '', value: 'actionControls', 'sortable': false}]
 const stations_url = oAPI + "/collections/stations/items?f=json"
 
 const stationHeaders = [
@@ -96,6 +97,33 @@ const stationHeaders = [
   //   for edit icon
   {'text': '', value: 'actionControls', 'sortable': false}
 ]
+const stationStatus = [
+        {value: 'closed', title: 'Closed'},
+        {value: 'nonReporting', title: 'Non-reporting'},
+        {value: 'operational', title: 'Operational'},
+        {value: 'partlyOperational', title: 'Partly operational'},
+        {value: 'planned', title: 'Planned'},
+        {value: 'preOperational', title: 'Pre-operational'},
+        {value: 'standBy', title: 'Stand-by'},
+        {value: 'unknown', title: 'unknown'}
+      ]
+const facilityTypes = [
+  {value: 'airFixed', title: 'Air (fixed)'},
+  {value: 'airMobile', title: 'Air (mobile)'},
+  {value: 'lakeRiverFixed', title: 'Lake/River (fixed)'},
+  {value: 'lakeRiverMobile', title: 'Lake/River (mobile)'},
+  {value: 'landFixed', title: 'Land (fixed)'},
+  {value: 'landMobile', title: 'Land (mobile)'},
+  {value: 'landOnIce', title: 'Land (on ice)'},
+
+  {value: 'seaFixed', title: 'Land (on ice)'},
+  {value: 'seaMobile', title: 'Sea (mobile)'},
+  {value: 'seaOnIce', title: 'Sea (on ice)'},
+  {value: 'spaceBased', title: 'Space-based'},
+  {value: 'underwaterFixed', title: 'Underwater (fixed)'},
+  {value: 'underwaterMobile', title: 'Underwater (mobile)'},
+  {value: 'unknown', title: 'unknown'},
+]
 
 
 export default {
@@ -112,16 +140,9 @@ export default {
       // formContent: {},
       stationData: {},
       // todo - get dynamically? from https://codes.wmo.int/wmdr/_ReportingStatus
-      stationStatus: [
-        {value: 'closed', title: 'Closed'},
-        {value: 'nonReporting', title: 'Non-reporting'},
-        {value: 'operational', title: 'Operational'},
-        {value: 'partlyOperational', title: 'Partly operational'},
-        {value: 'planned', title: 'Planned'},
-        {value: 'preOperational', title: 'Pre-operational'},
-        {value: 'standBy', title: 'Stand-by'},
-        {value: 'unknown', title: 'unknown'}
-      ]
+      stationStatus: stationStatus,
+      facilityTypes: facilityTypes
+
     };
   },
   async created() {

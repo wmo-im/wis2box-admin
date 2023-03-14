@@ -59,7 +59,16 @@
               ></v-select>
             </v-col>
             <v-col cols="12" sm="4" md="6">
-              <v-text-field v-model="stationData.facility_type" label="Facility Type" :rules="rules.required"></v-text-field>
+              <v-select
+                  v-model="stationData.facility_type"
+                  :items="this.facilityTypes"
+                  item-text='title'
+                  item-value='title'
+                  item-label="Facility Type"
+                  label="Facility Type"
+                  :rules="rules.required"
+              ></v-select>
+<!--              <v-text-field v-model="stationData.facility_type" label="Facility Type" :rules="rules.required"></v-text-field>-->
             </v-col>
           </v-row>
           <v-row>
@@ -116,6 +125,7 @@ export default {
     dialog: Boolean,
     formContent: {},
     stationStatus: [],
+    facilityTypes: [],
     submitFunc: Function,
   },
   data() {
