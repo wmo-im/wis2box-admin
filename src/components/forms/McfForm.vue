@@ -147,8 +147,100 @@ export default {
       element.click()
     },
     updateModel($event) {
-      if ("fullKey" in $event) {
-        this.log($event.fullKey)
+      if ( 
+        (this.loading === false) && 
+        ("fullKey" in $event) && 
+        !("oldValue" in $event) 
+      ) {
+
+        if (
+          ($event.fullKey === "meta.country") ||
+          ($event.fullKey === "meta.centre_id") ||
+          ($event.fullKey === "identification.wmo_data_policy") ||
+          ($event.fullKey === "identification.wmo_keywords")
+        ) {
+          if (
+            ("country" in this.model.meta) &&
+            ("centre_id" in this.model.meta) &&
+            ("wmo_data_policy" in this.model.identification) &&
+            ("wmo_keywords" in this.model.identification) &&
+            (this.model.identification.wmo_keywords.length > 0)
+          ) {
+
+            var comp1 = this.model.identification.wmo_keywords[0]
+            var comp2 = "observations"
+            var index = -1
+            for (var i = 0; i < this.model.identification.wmo_keywords[0].length; i++) {
+              if (this.model.identification.wmo_keywords[0][i] === this.model.identification.wmo_keywords[0][i].toUpperCase()) {
+                index = i
+                break
+              }
+            }
+            if (index !== -1) {
+              comp1 = this.model.identification.wmo_keywords[0].substring(0, index)
+              comp2 = this.model.identification.wmo_keywords[0].substring(index).toLowerCase()
+            }
+
+            this.model.hierarchy.topic_hierarchy = 
+              `${this.model.meta.country}.${this.model.meta.centre_id}.data.${this.model.identification.wmo_data_policy}.${comp1}.${comp1}-${comp2}`
+            this.model.hierarchy.identifier = 
+              `urn:x-wmo:md:${this.model.meta.country}:${this.model.meta.centre_id}:${comp1}-${comp2}`
+
+            alert(JSON.stringify($event))
+            alert(JSON.stringify(this.model))
+          }
+        }
+
+        if ($event.fullKey === "distrib.duplicate_from_poc") {
+          alert(JSON.stringify($event))
+          if (this.model.distrib.duplicate_from_poc) {
+            var tmp = JSON.serialize(JSON.stringify(this.model.poc))
+            tmp["duplicate_from_poc"] = true
+            this.model.distrib = tmp
+          }
+          else {
+            this.model.distrib = {}
+          }
+          
+          alert(JSON.stringify(this.model))
+        }
+
+        if ($event.fullKey === "meta.country") {
+          this.model.meta.country = this.model.meta.country.toLowerCase()
+        }
+
+        if ($event.fullKey === "meta.centre_id") {
+          this.model.meta.centre_id = this.model.meta.centre_id.toLowerCase()
+        }
+
+        if ($event.fullKey === "identification.url") {
+          this.model.identification.url = this.model.identification.url.toLowerCase()
+        }
+
+        if ($event.fullKey === "poc.url") {
+          this.model.poc.url = this.model.poc.url.toLowerCase()
+        }
+
+        if ($event.fullKey === "poc.email") {
+          this.model.poc.email = this.model.poc.email.toLowerCase()
+        }
+
+        if ($event.fullKey === "distrib.url") {
+          this.model.distrib.url = this.model.distrib.url.toLowerCase()
+        }
+
+        if ($event.fullKey === "distrib.email") {
+          this.model.distrib.email = this.model.distrib.email.toLowerCase()
+        }
+
+        if ($event.fullKey === "hierarchy.topic_hierarchy") {
+          this.model.hierarchy.topic_hierarchy = this.model.hierarchy.topic_hierarchy.toLowerCase()
+        }
+
+        if ($event.fullKey === "hierarchy.identifier") {
+          this.model.hierarchy.identifier = this.model.hierarchy.identifier.toLowerCase()
+        }
+
       }
     },
     modulateModel(input) {
@@ -157,10 +249,16 @@ export default {
 
       output["mcf"] = { version: this.schema.version.toFixed(1) }
 
-      output["wis2box"] = input.wis2box
-      output["wis2box"]["retention"] =  `P${input.wis2box.retention.toUpperCase()}`
+      output["wis2box"] = {}
+      output["wis2box"]["country"] = input.meta.country
+      output["wis2box"]["centre_id"] = input.meta.centre_id
+      output["wis2box"]["retention"] =  `P${input.meta.retention.toUpperCase()}`
+      output["wis2box"]["topic_hierarchy"] = input.hierarchy.topic_hierarchy
 
-      output["metadata"] = input.metadata
+
+      output["metadata"] = {}
+      output["metadata"]["identifier"] = input.hierarchy.identifier
+      output["metadata"]["hierarchylevel"] = input.meta.hierarchylevel
 
       output["identification"] = {}
       output["identification"]["title"] = input.identification.title
@@ -185,6 +283,8 @@ export default {
       return output
     },
     demodulateModel(input) {
+
+      alert("#todo not reformatted")
       
       var output = {}
 

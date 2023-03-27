@@ -2,10 +2,10 @@
     "version": 1.0,
     "type": "object",
     "properties": {
-        "wis2box": {
+        "meta": {
             "type": "object",
-            "title": "WIS2",
-            "description": "WIS2 Identification Information",
+            "title": "Metadata",
+            "description": "Metadata Information",
             "properties": {
                 "country": {
                     "type": "string",
@@ -20,8 +20,14 @@
                 },
                 "centre_id": {
                     "type": "string",
+                    "description": "Agency acronym, as specified by member.",
+                    "pattern": "^[a-z]{2,}$",
                     "x-cols": 4,
-                    "description": "Agency acronym, as specified by member."
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid agency name."
+                        }
+                    }
                 },
                 "retention": {
                     "type": "string",
@@ -38,40 +44,6 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid retention option."
-                        }
-                    }
-                },
-                "topic_hierarchy": {
-                    "type": "string",
-                    "pattern": "^[a-z]{3}\\.[_a-z]+\\.(data|metadata|reports)\\.(core|reccomended)\\.[\\w]+\\.[\\w-]+[\\.\\w]*$",
-                    "description": "Unique identifier for this metadata file.",
-                    "x-options":{
-                        "messages":  {
-                            "pattern":  "Invalid topic hierarchy."
-                        }
-                    }
-                }
-            },
-            "required": [
-                "topic_hierarchy",
-                "country",
-                "centre_id",
-                "retention"
-            ]
-        },
-        "metadata": {
-            "type": "object",
-            "title": "Metadata",
-            "description": "Metadata Information",
-            "properties": {
-                "identifier": {
-                    "type": "string",
-                    "description": "Unique identifier for this file. (Usually similar to the topic hierarchy.)",
-                    "pattern": "^urn:x-wmo:md:[a-z]{3}:[a-z0-9_-]+:[a-z0-9_-]+:[a-z0-9_-]+[a-z0-9:]*$",
-                    "default": "urn:x-wmo:md:",
-                    "x-options":{
-                        "messages":  {
-                            "pattern":  "Invalid unique identifier."
                         }
                     }
                 },
@@ -99,7 +71,9 @@
                 }
             },
             "required": [
-                "identifier",
+                "country",
+                "centre_id",
+                "retention",
                 "hierarchylevel"
             ]
         },
@@ -119,6 +93,7 @@
                 "url": {
                     "type": "string",
                     "description": "URI where data can be accessed.",
+                    "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
                     "x-cols": 9,
                     "x-options":{
                         "messages":  {
@@ -206,7 +181,13 @@
                 },
                 "url": {
                     "type": "string",
-                    "description": "Organization website."
+                    "description": "Organization website.",
+                    "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid website URL."
+                        }
+                    }
                 },
                 "individualname": {
                     "type": "string",
@@ -267,7 +248,7 @@
                 "email": {
                     "type": "string",
                     "description": "Contact email address.",
-                    "pattern": "^[A-Za-z0-9\\._-]+@[A-Za-z0-9-]+\\.[A-Za-z0-9\\.-]+$",
+                    "pattern": "^[a-z0-9\\._-]+@[a-z0-9-]+\\.[a-z0-9\\.-]+$",
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid email."
@@ -316,7 +297,7 @@
             "title": "Distributor",
             "description": "Distributor Contact Information",
             "properties": {
-                "duplicate_info": {
+                "duplicate_from_poc": {
                     "type": "boolean",
                     "description": "Use point of contact information as distributor information too."
                 },
@@ -326,7 +307,13 @@
                 },
                 "url": {
                     "type": "string",
-                    "description": "Organization website."
+                    "description": "Organization website.",
+                    "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid website URL."
+                        }
+                    }
                 },
                 "individualname": {
                     "type": "string",
@@ -387,7 +374,7 @@
                 "email": {
                     "type": "string",
                     "description": "Contact email address.",
-                    "pattern": "^[A-Za-z0-9\\._-]+@[A-Za-z0-9-]+\\.[A-Za-z0-9\\.-]+$",
+                    "pattern": "^[a-z0-9\\._-]+@[a-z0-9-]+\\.[a-z0-9\\.-]+$",
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid email."
@@ -429,6 +416,38 @@
                 "email",
                 "hoursofservice",
                 "contactinstructions"
+            ]
+        },
+        "hierarchy": {
+            "type": "object",
+            "title": "WIS2",
+            "description": "WIS2 Hierarchy Identification",
+            "properties": {
+                "topic_hierarchy": {
+                    "type": "string",
+                    "pattern": "^[a-z]{3}\\.[_a-z]+\\.(data|metadata|reports)\\.(core|reccomended)\\.[\\w]+\\.[\\w-]+[\\.\\w]*$",
+                    "description": "Unique identifier for this metadata file.",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid topic hierarchy."
+                        }
+                    }
+                },
+                "identifier": {
+                    "type": "string",
+                    "description": "Unique identifier for this file. (Usually similar to the topic hierarchy.)",
+                    "pattern": "^urn:x-wmo:md:[a-z]{3}:[a-z0-9_-]+:[a-z0-9_-]+[a-z0-9:]*$",
+                    "default": "urn:x-wmo:md:",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid unique identifier."
+                        }
+                    }
+                }
+            },
+            "required": [
+                "topic_hierarchy",
+                "identifier"
             ]
         }
     }
