@@ -1,9 +1,11 @@
 <template>
   <v-dialog
       :value="dialog"
+      v-if="dialog"
       @input="$emit('input', $event)"
+      @click:outside="close"
       width="600px"
-      persistent>
+      >
     <v-card>
       <v-card-title>
         <v-layout wrap>
@@ -101,6 +103,13 @@
           Validate
         </v-btn>
       </div>
+      <v-item style="height: 600px; width: 100%">
+        <geometry-editor v-bind:input-feature="stationData" v-on:updateGeometry="handleGeometryUpdate($event)"></geometry-editor>
+
+      </v-item>
+      <v-spacer/>
+<!--      <v-container style="height: 400px; width: 100%">-->
+<!--      </v-container>-->
       <v-card-actions>
         <v-spacer/>
         <v-btn color="pink lighten-1" class="mr-1" text @click="close">
@@ -115,12 +124,24 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+    <div>
+      <!--      <dataset-map :dataset="stationData"/>-->
+
+    </div>
   </v-dialog>
 </template>
 
 <script>
 
+
+
+import GeometryEditor from "@/components/leaflet/GeometryEditor.vue";
+
 export default {
+  components: {
+    GeometryEditor
+    // DatasetMap,
+  },
   props: {
     dialog: Boolean,
     formContent: {},
@@ -128,6 +149,10 @@ export default {
     facilityTypes: [],
     submitFunc: Function,
   },
+  destroyed() {
+    console.log('destroyed')
+    },
+
   data() {
     return {
       valid: false,
@@ -140,7 +165,7 @@ export default {
   },
   watch: {
     formContent(dat) {
-    console.log('watch')
+    console.log('new form content', dat)
       if (dat !== {}){
         this.stationData = dat
       }
@@ -151,6 +176,11 @@ export default {
   },
 
   methods: {
+    handleGeometryUpdate(newGeom){
+      console.log("handleGeometryUpdate")
+      console.log(newGeom)
+
+    },
     validate() {
       const isvalid = this.$refs.form.validate()
       this.valid = isvalid
@@ -159,6 +189,7 @@ export default {
       if (!this.valid) alert('form is not valid')
     },
     close() {
+      console.log('dialog close')
       this.$emit("close-dialog");
     },
     updateStation(eventInfo) {
