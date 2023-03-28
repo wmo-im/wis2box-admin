@@ -44,9 +44,6 @@
           v-model="model"
           :schema="schema"
           :options="options"
-          @input="updateModel($event)" 
-          @change="updateModel($event)" 
-          @input-child="updateModel($event)" 
           @change-child="updateModel($event)"
         />
       </v-form>
@@ -83,6 +80,10 @@ export default {
         editMode: "inline",
         rootDisplay: "stepper",
       },
+      form: {
+        initialized: false,
+        manual_ids: false
+      }
     };
   },
   mounted() {
@@ -134,6 +135,7 @@ export default {
     },
     resetForm() {
       this.model = {}
+      this.form.initialized = false
     },
     downloadForm(format) {
       var content = encodeURI(JSON.stringify(this.modulateModel(this.model), null, 4))
@@ -143,30 +145,74 @@ export default {
       var element = document.createElement("a")
       element.href = "data:attachment/text," + content
       element.target = "_blank"
-      element.download = this.model.wis2box.topic_hierarchy + "." + format
+      element.download = this.model.identifiers.topic_hierarchy + "." + format
       element.click()
     },
     updateModel($event) {
+      this.log(JSON.stringify($event))
+
+      // Only auto-fill on form changes.
       if ( 
         (this.loading === false) && 
         ("fullKey" in $event) && 
         !("oldValue" in $event) 
       ) {
 
+        // Pre-fill form with automatic values.
+        if (!this.form.initialized) {
+
+          var today = new Date()
+
+          this.model.identification["date_started"] = today.toISOString().split('T')[0]
+          this.model.identification["date_ended"] = null
+
+          this.model.poc.fax = null
+          this.model.poc.address = null
+          this.model.poc.postalcode = null
+          this.model.poc.hoursofservice = 
+            `0900h - 1700h ${today.toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2]}`
+          
+          this.model.distrib.fax = null
+          this.model.distrib.address = null
+          this.model.distrib.postalcode = null
+          this.model.distrib.hoursofservice = 
+            `0900h - 1700h ${today.toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2]}`
+
+          this.model.identifiers.date_published = today.toISOString().split('T')[0]
+          
+          this.form.initialized = true
+
+        }
+
+        // Disable editing identifiers if manually changed.
+        if (
+          ($event.fullKey === "identifiers.topic_hierarchy") ||
+          ($event.fullKey === "identifiers.identifier")
+        ) {
+          this.manual_ids = true
+        }
+
+        // Auto-fill topic identifiers.
         if (
           ($event.fullKey === "meta.country") ||
           ($event.fullKey === "meta.centre_id") ||
           ($event.fullKey === "identification.wmo_data_policy") ||
           ($event.fullKey === "identification.wmo_keywords")
         ) {
+
+          // Only auto-fill if all components are entered, but not manually edited.
           if (
             ("country" in this.model.meta) &&
+            (this.model.meta.country.length > 0) &&
             ("centre_id" in this.model.meta) &&
+            (this.model.meta.centre_id.length > 0) &&
             ("wmo_data_policy" in this.model.identification) &&
             ("wmo_keywords" in this.model.identification) &&
-            (this.model.identification.wmo_keywords.length > 0)
+            (this.model.identification.wmo_keywords.length > 0) &&
+            !this.form.manual_ids
           ) {
 
+            // Extract topic components.
             var comp1 = this.model.identification.wmo_keywords[0]
             var comp2 = "observations"
             var index = -1
@@ -181,64 +227,57 @@ export default {
               comp2 = this.model.identification.wmo_keywords[0].substring(index).toLowerCase()
             }
 
-            this.model.hierarchy.topic_hierarchy = 
+            // Create pre-defined topic identifiers.
+            this.model.identifiers.topic_hierarchy = 
               `${this.model.meta.country}.${this.model.meta.centre_id}.data.${this.model.identification.wmo_data_policy}.${comp1}.${comp1}-${comp2}`
-            this.model.hierarchy.identifier = 
+            this.model.identifiers.identifier = 
               `urn:x-wmo:md:${this.model.meta.country}:${this.model.meta.centre_id}:${comp1}-${comp2}`
 
-            alert(JSON.stringify($event))
-            alert(JSON.stringify(this.model))
           }
         }
 
+        // Auto-fill distributor if copy is selected.
         if ($event.fullKey === "distrib.duplicate_from_poc") {
-          alert(JSON.stringify($event))
           if (this.model.distrib.duplicate_from_poc) {
-            var tmp = JSON.serialize(JSON.stringify(this.model.poc))
+            var tmp = JSON.parse(JSON.stringify(this.model.poc))
             tmp["duplicate_from_poc"] = true
             this.model.distrib = tmp
           }
           else {
             this.model.distrib = {}
           }
-          
-          alert(JSON.stringify(this.model))
         }
 
+        // Automatically make lowercase.
         if ($event.fullKey === "meta.country") {
           this.model.meta.country = this.model.meta.country.toLowerCase()
         }
-
         if ($event.fullKey === "meta.centre_id") {
           this.model.meta.centre_id = this.model.meta.centre_id.toLowerCase()
         }
-
+        if ($event.fullKey === "meta.language") {
+          this.model.meta.language = this.model.meta.language.toLowerCase()
+        }
         if ($event.fullKey === "identification.url") {
           this.model.identification.url = this.model.identification.url.toLowerCase()
         }
-
         if ($event.fullKey === "poc.url") {
           this.model.poc.url = this.model.poc.url.toLowerCase()
         }
-
         if ($event.fullKey === "poc.email") {
           this.model.poc.email = this.model.poc.email.toLowerCase()
         }
-
         if ($event.fullKey === "distrib.url") {
           this.model.distrib.url = this.model.distrib.url.toLowerCase()
         }
-
         if ($event.fullKey === "distrib.email") {
           this.model.distrib.email = this.model.distrib.email.toLowerCase()
         }
-
-        if ($event.fullKey === "hierarchy.topic_hierarchy") {
-          this.model.hierarchy.topic_hierarchy = this.model.hierarchy.topic_hierarchy.toLowerCase()
+        if ($event.fullKey === "identifiers.topic_hierarchy") {
+          this.model.identifiers.topic_hierarchy = this.model.identifiers.topic_hierarchy.toLowerCase()
         }
-
-        if ($event.fullKey === "hierarchy.identifier") {
-          this.model.hierarchy.identifier = this.model.hierarchy.identifier.toLowerCase()
+        if ($event.fullKey === "identifiers.identifier") {
+          this.model.identifiers.identifier = this.model.identifiers.identifier.toLowerCase()
         }
 
       }
@@ -247,24 +286,31 @@ export default {
 
       var output = {}
 
-      output["mcf"] = { version: this.schema.version.toFixed(1) }
+      output["mcf"] = { version: this.schema.version }
 
       output["wis2box"] = {}
       output["wis2box"]["country"] = input.meta.country
       output["wis2box"]["centre_id"] = input.meta.centre_id
       output["wis2box"]["retention"] =  `P${input.meta.retention.toUpperCase()}`
-      output["wis2box"]["topic_hierarchy"] = input.hierarchy.topic_hierarchy
+      output["wis2box"]["topic_hierarchy"] = input.identifiers.topic_hierarchy
 
 
       output["metadata"] = {}
-      output["metadata"]["identifier"] = input.hierarchy.identifier
+      output["metadata"]["identifier"] = input.identifiers.identifier
       output["metadata"]["hierarchylevel"] = input.meta.hierarchylevel
+      output["metadata"]["language"] = input.meta.language
+      output["metadata"]["charset"] = input.meta.charset
 
       output["identification"] = {}
       output["identification"]["title"] = input.identification.title
       output["identification"]["abstract"] = input.identification.abstract
       output["identification"]["url"] = input.identification.url
       output["identification"]["wmo_data_policy"] = input.identification.wmo_data_policy
+      output["identification"]["language"] = input.meta.language
+      output["identification"]["charset"] = input.meta.charset
+      output["identification"]["dates"] = {}
+      output["identification"]["dates"]["creation"] = input.identification.date_started
+      output["identification"]["dates"]["publication"] = input.identifiers.date_published
       output["identification"]["keywords"] = {}
       output["identification"]["keywords"]["default"] = {}
       output["identification"]["keywords"]["default"]["keywords"] = input.identification.search_keywords
@@ -274,11 +320,22 @@ export default {
       output["identification"]["keywords"]["wmo"]["vocabulary"] = {}
       output["identification"]["keywords"]["wmo"]["vocabulary"]["name"] = "WMO Category Code"
       output["identification"]["keywords"]["wmo"]["vocabulary"]["url"] = "https://github.com/wmo-im/wcmp-codelists/blob/main/codelists/WMO_CategoryCode.csv"
+      output["identification"]["extents"] = {}
+      output["identification"]["extents"]["spatial"] = {}
+      output["identification"]["extents"]["spatial"]["bbox"] = 
+        `[${input.identification.leftmost_longitude}, ${input.identification.bottommost_latitude}, ${input.identification.rightmost_longitude}, ${input.identification.topmost_latitude}]`
+        output["identification"]["extents"]["spatial"]["crs"] = 4326
+      output["identification"]["extents"]["temporal"] = {}
+      output["identification"]["extents"]["temporal"]["begin"] = input.identification.date_started
+      output["identification"]["extents"]["temporal"]["end"] = input.identification.date_ended
+      output["identification"]["extents"]["temporal"]["resolution"] = `P${input.identification.resolution.toUpperCase()}`
 
       output["contact"] = {}
       output["contact"]["pointOfContact"] = input.poc
       output["contact"]["distributor"] = input.distrib
-      delete output["contact"]["distributor"]["duplicate_info"]
+      delete output["contact"]["distributor"]["duplicate_from_poc"]
+
+      this.log(JSON.stringify(output))
 
       return output
     },
@@ -304,6 +361,8 @@ export default {
       output["poc"] = input.contact.pointOfContact
       output["distrib"] = input.contact.distributor
       output["distrib"]["duplicate_info"] = false
+
+      return output
 
     },
     prepareSchema(title, node) {

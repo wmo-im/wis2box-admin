@@ -1,5 +1,5 @@
 {
-    "version": 1.0,
+    "version": "1.0",
     "type": "object",
     "properties": {
         "meta": {
@@ -20,7 +20,7 @@
                 },
                 "centre_id": {
                     "type": "string",
-                    "description": "Agency acronym, as specified by member.",
+                    "description": "Agency acronym (in lower case), as specified by member.",
                     "pattern": "^[a-z]{2,}$",
                     "x-cols": 4,
                     "x-options":{
@@ -47,9 +47,31 @@
                         }
                     }
                 },
+                "language": {
+                    "type": "string",
+                    "description": "Lower case representation of language in 2-letter code.",
+                    "pattern": "^[a-z]{2}$",
+                    "x-cols": 4,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid 2-letter code."
+                        }
+                    }
+                },
+                "charset": {
+                    "type": "string",
+                    "description": "Encoding used in data.",
+                    "x-cols": 4,
+                    "enum": [
+                        "utf8",
+                        "utf16",
+                        "ascii"
+                    ]
+                },
                 "hierarchylevel": {
                     "type": "string",
                     "description": "Level to which the metadata applies.",
+                    "x-cols": 4,
                     "enum": [
                         "series",
                         "software",
@@ -74,6 +96,8 @@
                 "country",
                 "centre_id",
                 "retention",
+                "language",
+                "charset",
                 "hierarchylevel"
             ]
         },
@@ -89,26 +113,6 @@
                 "abstract": {
                     "type": "string",
                     "description": "Brief description of data."
-                },
-                "url": {
-                    "type": "string",
-                    "description": "URI where data can be accessed.",
-                    "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
-                    "x-cols": 9,
-                    "x-options":{
-                        "messages":  {
-                            "pattern":  "Invalid URI."
-                        }
-                    }
-                },
-                "wmo_data_policy": {
-                    "type": "string",
-                    "description": "Priority of data within WMO.",
-                    "x-cols": 3,
-                    "enum": [
-                        "core",
-                        "recommended"
-                    ]
                 },
                 "wmo_keywords": {
                     "type": "array",
@@ -159,15 +163,110 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "url": {
+                    "type": "string",
+                    "description": "URI where data can be accessed (including 'http://' or 'https://').",
+                    "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
+                    "x-cols": 9,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid URI."
+                        }
+                    }
+                },
+                "wmo_data_policy": {
+                    "type": "string",
+                    "description": "Priority of data within WMO.",
+                    "x-cols": 3,
+                    "enum": [
+                        "core",
+                        "recommended"
+                    ]
+                },
+                "topmost_latitude": {
+                    "type": "number",
+                    "description": "The top-most latitude to which data applies.",
+                    "x-cols": 3,
+                    "minimum": -90,
+                    "maximum": 90
+                },
+                "bottommost_latitude": {
+                    "type": "number",
+                    "description": "The bottom-most latitude to which data applies.",
+                    "x-cols": 3,
+                    "minimum": -90,
+                    "maximum": 90
+                },
+                "leftmost_longitude": {
+                    "type": "number",
+                    "description": "The left-most longitude to which data applies.",
+                    "x-cols": 3,
+                    "minimum": -180,
+                    "maximum": 180
+                },
+                "rightmost_longitude": {
+                    "type": "number",
+                    "description": "The right-most longitude to which data applies.",
+                    "x-cols": 3,
+                    "minimum": -180,
+                    "maximum": 180
+                },
+                "date_started": {
+                    "type": "string",
+                    "description": "Date on which data collection started.",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                    "x-cols": 4,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid date format."
+                        }
+                    }
+                },
+                "date_ended": {
+                    "type": "string",
+                    "description": "Date on which data collection ended. (Leave blank if ongoing.)",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                    "x-cols": 4,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid date format."
+                        }
+                    }
+                },
+                "resolution": {
+                    "type": "string",
+                    "description": "Frequency of data.",
+                    "default": "1h",
+                    "enum": [
+                        "5m",
+                        "15m",
+                        "1h",
+                        "1d",
+                        "7d",
+                        "30d"
+                    ],
+                    "x-cols": 4,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid resolution option."
+                        }
+                    }
                 }
             },
             "required": [
                 "title",
                 "abstract",
+                "wmo_keywords",
+                "search_keywords",
                 "url",
                 "wmo_data_policy",
-                "wmo_keywords",
-                "search_keywords"
+                "topmost_latitude",
+                "bottommost_latitude",
+                "leftmost_longitude",
+                "rightmost_longitude",
+                "date_started",
+                "resolution"
             ]
         },
         "poc": {
@@ -181,7 +280,7 @@
                 },
                 "url": {
                     "type": "string",
-                    "description": "Organization website.",
+                    "description": "Organization website (including 'http://' or 'https://').",
                     "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
                     "x-options":{
                         "messages":  {
@@ -307,7 +406,7 @@
                 },
                 "url": {
                     "type": "string",
-                    "description": "Organization website.",
+                    "description": "Organization website (including 'http://' or 'https://').",
                     "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
                     "x-options":{
                         "messages":  {
@@ -418,9 +517,9 @@
                 "contactinstructions"
             ]
         },
-        "hierarchy": {
+        "identifiers": {
             "type": "object",
-            "title": "WIS2",
+            "title": "Identifiers",
             "description": "WIS2 Hierarchy Identification",
             "properties": {
                 "topic_hierarchy": {
@@ -435,19 +534,29 @@
                 },
                 "identifier": {
                     "type": "string",
-                    "description": "Unique identifier for this file. (Usually similar to the topic hierarchy.)",
+                    "description": "Unique identifier for this file. (Usually similar to the topic hierarchy. Must begin with 'urn:x-wmo:md:'.)",
                     "pattern": "^urn:x-wmo:md:[a-z]{3}:[a-z0-9_-]+:[a-z0-9_-]+[a-z0-9:]*$",
-                    "default": "urn:x-wmo:md:",
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid unique identifier."
+                        }
+                    }
+                },
+                "date_published": {
+                    "type": "string",
+                    "description": "Date on which the data publishing to WIS2 will start.",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid date format."
                         }
                     }
                 }
             },
             "required": [
                 "topic_hierarchy",
-                "identifier"
+                "identifier",
+                "date_published"
             ]
         }
     }
