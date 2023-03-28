@@ -15,11 +15,13 @@
       <v-spacer/>
       <v-spacer/>
       <edit-modal
+          :form-title="formTitle"
           :form-content="stationData"
           :station-status="stationStatus"
           :facility-types="facilityTypes"
           :dialog.sync="dialog"
           :submit-func="handleUpdate"
+          :disco-data="discoveryMetadata"
           @open-dialog="
           dialog = true;
         "
@@ -28,7 +30,24 @@
           stationData={}
         "
       />
+      <v-btn
+          color="primary"
+          dark
+          class="mb-13"
+          @click="openDialog(null)"
+      >
+        New Station
+      </v-btn>
       <v-data-table :headers="headers" :items="stations" :search="search">
+        <!--        <template v-slot:activator="{ on, attrs }">-->
+        <v-btn
+            color="primary"
+            dark
+              class="mb-2"
+          >
+            New Item
+          </v-btn>
+
         <template v-slot:item.name="{ item }">
           <a target="_blank" :href="item.url">
             {{ item.name }}
@@ -41,8 +60,11 @@
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </template>
+
       </v-data-table>
+
     </v-card>
+
   </div>
 </template>
 
@@ -136,12 +158,14 @@ export default {
       search: "",
       headers: [],
       stations: [],
+      discoveryMetadata: [],
       dialog: false,
       // formContent: {},
       stationData: {},
       // todo - get dynamically? from https://codes.wmo.int/wmdr/_ReportingStatus
       stationStatus: stationStatus,
-      facilityTypes: facilityTypes
+      facilityTypes: facilityTypes,
+      formTitle: '',
 
     };
   },
@@ -151,6 +175,7 @@ export default {
     // var otherurl = `${baseURL}/metadata/station/station_list.csv`;
     // var url = "http://localhost:8080/admin/station_list.csv";
     await this.loadStations()
+    await this.loadDiscovery()
   },
   methods: {
     async loadStations(){
@@ -174,13 +199,48 @@ export default {
             console.log(error)
           })
     },
-    async handleUpdate(action, updateData){
+    parseDiscoveryMetadata(discoData) {
+      this.discoveryMetadata = discoData.map(d => {return {title: d.id, value: d.id}})
+    },
+    async loadDiscovery() {
+      console.log('loadStations')
+      const self = this
+      await this.$http({
+        method: 'get',
+        url: oAPI + "/collections/discovery-metadata/items?f=json&lang=en-US",
+        headers: {'Accept': 'application/geo+json'},
+        params: {
+          skipGeometry: true,
+          properties: 'id',
+        }
+      })
+          .then(function (response) {
+            console.log('...loaded discovery metadta')
+            console.log(response)
+            if (response.data.features) {
+              self.parseDiscoveryMetadata(response.data.features)
+            } else {
+              console.log('error getting discovery collection', response)
+            }
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+    },
+    async handleUpdate(action, updateData) {
       console.log('handleUpdate')
       console.log(action)
       console.log(updateData)
       if (action === 'delete') {
         // todo - retry until count is decremented by 1 ?? why is the loadStations beating the Delete??
         await this.deleteStation(updateData.id).then(setTimeout(this.loadStations, 1000))
+      }
+      else if (action === 'insert') {
+        await this.insertStation(updateData).then(setTimeout(this.loadStations, 1000))
+      }
+      else if (action === 'update') {
+        await this.updateStation(updateData).then(setTimeout(this.loadStations, 1000))
+
       }
       // this.loadStations();
     },
@@ -202,8 +262,18 @@ export default {
       });
     },
     openDialog(station_id) {
-      const stn = this.stations.find(s => {return s.id === station_id})
-      this.stationData = Object.assign({}, stn)
+      if (station_id == null) {
+        this.formTitle = 'Add Station'
+        this.stationData = {}
+      } else {
+        const stn = this.stations.find(s => {
+          return s.id === station_id
+        })
+        this.formTitle = 'Edit Station'
+
+        this.stationData = Object.assign({}, stn)
+        console.log('station data: ', stn)
+      }
       this.dialog = true
     },
     parseStations(stationsCollection) {
@@ -218,12 +288,54 @@ export default {
       self.stations = stationsCollection.features.map(station => {return {...station.properties, ...station.geometry}})
       // self.stations = stationsCollection.features
     },
-    async deleteStation(stationID){
+    async insertStation(stnInfo) {
+      delete stnInfo.properties.coordinates
+      stnInfo.geometry.coordinates = stnInfo.geometry.coordinates.map(function (c) {
+        return c===null?0:Math.round(parseFloat(c))
+      })
+      console.log(stnInfo)
+      console.log(stnInfo)
+      await this.$http({
+        method: 'post',
+        // url: oAPI+`/collections/stations/items/${stnInfo.id}`,
+        url: oAPI+`/collections/stations/items`,
+        data: stnInfo,
+        headers: {'Content-Type': 'application/geo+json', 'accept': "*/*"}
+      })
+          .then(function (response) {
+            console.log('added station with response', response.status)
+            console.log(response)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+    },
+    async updateStation(stnInfo) {
+      // for update just get the og station info, and merge in the updated values/keys
+      // stnInfo = {...this.stationData, ...stnInfo}
+      delete stnInfo.properties.coordinates
+      stnInfo.geometry.coordinates = stnInfo.geometry.coordinates.map(c => Math.round(parseFloat(c)))
+      console.log(stnInfo)
+      await this.$http({
+        method: 'put',
+        url: oAPI + `/collections/stations/items/${stnInfo.id}`,
+        data: stnInfo,
+        headers: {'Content-Type': 'application/json'}
+      })
+          .then(function (response) {
+            console.log('updated station with response', response.status)
+            console.log(response)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+    },
+    async deleteStation(stationID) {
       console.log('deleteStation')
       // const self = this
       await this.$http({
         method: 'delete',
-        url: oAPI+`/collections/stations/items/${stationID}`,
+        url: oAPI + `/collections/stations/items/${stationID}`,
         // headers: {'Content-Type': 'application/json'}
       })
           .then(function (response) {

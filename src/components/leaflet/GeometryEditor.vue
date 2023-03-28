@@ -3,15 +3,21 @@
   <v-lazy>
     <v-img>
       <v-container>
-        <v-row>
-          <v-text-field label="Lat" variant="outlined" v-model="markerXYPosition.lat" prepend-icon="mdi:map-marker-plus"></v-text-field>
-          <v-text-field label="Lon" variant="outlined" v-model="markerXYPosition.lng" prepend-icon="mdi:map-marker-plus-outline"></v-text-field>
-          <v-text-field label="Elevation" variant="outlined" v-model="elevation" prepend-icon="mdi:elevation-rise"></v-text-field>
-        </v-row>
-        <v-row>
-          <v-btn color="blue" @click="refreshGeometry()" block>Update Map</v-btn>
-        </v-row>
+        <v-form>
+          <v-row>
+            <v-text-field :rules="this.rules" label="Lat" variant="outlined" v-model="markerXYPosition.lat"
+                          prepend-icon="mdi:map-marker-plus" type="number"></v-text-field>
+            <v-text-field :rules="this.rules" label="Lon" variant="outlined" v-model="markerXYPosition.lng"
+                          prepend-icon="mdi:map-marker-plus-outline" type="number"></v-text-field>
+            <v-text-field :rules="this.rules" label="Elevation" variant="outlined" v-model="elevation"
+                          prepend-icon="mdi:elevation-rise" type="number"></v-text-field>
+          </v-row>
+          <v-row>
+            <v-btn color="blue" @click="refreshGeometry()" block>Update Map</v-btn>
+          </v-row>
+        </v-form>
       </v-container>
+
 <!--      <l-map @update:center="centerUpdated(center)" :zoom="zoom" :center.sync="this.center" style="height: 400px; width: 100%" ref="leafmap">-->
       <l-map :zoom="zoom" :center.sync="center" style="height: 400px; width: 100%" ref="leafMap">
         <!--    <l-map :zoom="zoom" :center="this.center" ref="map">-->
@@ -44,7 +50,7 @@
             layer-type="base"
         />
 
-        <l-marker v-if="markerXYPosition" :autoPan="true" :autofocus="true" ref="mapMarker" :lat-lng.sync="markerXYPosition" :draggable="true"></l-marker>
+        <l-marker v-if="markerXYPosition.lat!==null && markerXYPosition.lng !== null" :autoPan="true" :autofocus="true" ref="mapMarker" :lat-lng.sync="markerXYPosition" :draggable="true"></l-marker>
         <!--    <l-marker :lat-lng="markerLatLng"></l-marker>-->
       </l-map>
     </v-img>
@@ -79,9 +85,16 @@ export default {
       layersPosition: 'topright',
       ogInputData: {},
       markerXYPosition: this.parseInputGeom(this.inputFeature),
-      elevation: null,
+      elevation: this.inputFeature.coordinates? this.inputFeature.coordinates[2]: null,
       // todo - get/set default center?
       center: this.parseInputGeom(this.inputFeature),
+      rules: [
+        value => {
+          // todo this fails for <1 decimals ???
+          if (value | String(value) ==='0') return true
+          return 'Required!'
+        },
+      ],
     };
   },
   computed: {
@@ -98,31 +111,38 @@ export default {
     //   }
     // }
   },
-  // watch: {
-  //   markerXYPosition: {
-  //     handler(newVal, oldVal) {
-  //       console.log(`new marker: ${newVal}`)
-  //       console.log(`old marker: ${oldVal}`)
-  //     },
-  //     deep: true
-  //   }
-  // },
+  watch: {
+    markerXYPosition: {
+      handler(newVal, oldVal) {
+        console.log(`new marker: ${newVal}`)
+        console.log(`old marker: ${oldVal}`)
+        this.$emit('geomUpdate', [newVal.lng, newVal.lat, this.elevation])
+      },
+      deep: true
+    }
+  },
 
   methods: {
     parseInputGeom(inputGeom) {
-      if (inputGeom) {
+      if (Object.keys(inputGeom ).length > 0) {
         console.log(inputGeom)
         const markerLatLng = new LatLng(inputGeom.coordinates[1], inputGeom.coordinates[0])
+        this.center = [inputGeom.coordinates[1], inputGeom.coordinates[1]]
         // this.center = markerLatLng
         return markerLatLng
       }
       else {
         console.log('error parsing input geometry')
-        return []
+        return {lat: null, lng: null}
       }
     },
-    refreshGeometry(someEvent){
+    refreshGeometry(someEvent) {
       console.log('refreshGeometry', someEvent)
+      if (this.markerXYPosition.lat === null | this.markerXYPosition.lng === null) {
+        const currentCenter = this.$refs.leafMap.mapObject.getCenter()
+        this.markerXYPosition = currentCenter
+      }
+      this.$emit('geomUpdate', [this.markerXYPosition.lng, this.markerXYPosition.lat, this.elevation])
       this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
     },
     loadBasemaps() {
