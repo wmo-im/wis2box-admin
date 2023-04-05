@@ -80,43 +80,23 @@ export default {
     return {
       tileProviders: this.loadBasemaps(),
       zoom: 5,
-      // todo - get from wis2box environment (pass into env.js)
-      // markerLatLng: [11, 11],
       layersPosition: 'topright',
       ogInputData: {},
+      center: [0,0],
       markerXYPosition: this.parseInputGeom(this.inputFeature),
       elevation: this.inputFeature.coordinates? this.inputFeature.coordinates[2]: null,
-      // todo - get/set default center?
-      center: this.parseInputGeom(this.inputFeature),
       rules: [
         value => {
-          // todo this fails for <1 decimals ???
           if (value | String(value) ==='0') return true
           return 'Required!'
         },
       ],
     };
   },
-  computed: {
-    // computedXY() {
-    //   console.log('computeXY');
-    //   console.log(this.inputFeature)
-    //   if (this.inputFeature) {
-    //     this.center = [12, 41]
-    //
-    //     return new LatLng(12, 41)
-    //   }
-    //   else {
-    //     return new LatLng(0, 0)
-    //   }
-    // }
-  },
   watch: {
     markerXYPosition: {
-      handler(newVal, oldVal) {
-        console.log(`new marker: ${newVal}`)
-        console.log(`old marker: ${oldVal}`)
-        this.$emit('geomUpdate', [newVal.lng, newVal.lat, this.elevation])
+      handler(newVal) {
+        this.$emit('geomUpdate', [newVal.lng, newVal.lat, parseFloat(this.elevation)])
       },
       deep: true
     }
@@ -127,8 +107,7 @@ export default {
       if (Object.keys(inputGeom ).length > 0) {
         console.log(inputGeom)
         const markerLatLng = new LatLng(inputGeom.coordinates[1], inputGeom.coordinates[0])
-        this.center = [inputGeom.coordinates[1], inputGeom.coordinates[1]]
-        // this.center = markerLatLng
+        this.center = [inputGeom.coordinates[1], inputGeom.coordinates[0]]
         return markerLatLng
       }
       else {

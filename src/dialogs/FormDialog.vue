@@ -5,7 +5,7 @@
       @input="$emit('input', $event)"
       @click:outside="close"
       width="600px"
-      >
+  >
     <v-card>
       <v-card-title>
         <v-layout wrap>
@@ -19,25 +19,7 @@
           </v-flex>
         </v-layout>
       </v-card-title>
-      <span class="text-md-subtitle-2">{{ stationData.topic }}</span>
-      <v-card-text>
-        <!--        <p>Dialog content is here</p>-->
-        <p>data : {{ getStationData() }}</p>
-      </v-card-text>
       <v-spacer></v-spacer>
-      <!--      <v-card-text>-->
-      <!--        <v-container>-->
-      <!--          <v-row>-->
-      <!--            <v-col v-for="(value, name, index) in formContent" :key="index" cols="12" sm="6" md="4">-->
-      <!--              <v-text-field :value="value" :label="name" required>TEST</v-text-field>-->
-      <!--            </v-col>-->
-      <!--&lt;!&ndash;            <v-col cols="12" sm="6" md="4">&ndash;&gt;-->
-      <!--&lt;!&ndash;              <v-text-field label="Facility Type*" hint="example of helper text only on focus"></v-text-field>&ndash;&gt;-->
-      <!--&lt;!&ndash;            </v-col>&ndash;&gt;-->
-      <!--          </v-row>-->
-      <!--        </v-container>-->
-      <!--      </v-card-text>-->
-<!--      <v-form v-model="valid">-->
       <v-form v-model="valid" ref="form">
         <v-container>
           <v-row>
@@ -71,7 +53,7 @@
                   label="Facility Type"
                   :rules="rules.required"
               ></v-select>
-<!--              <v-text-field v-model="stationData.facility_type" label="Facility Type" :rules="rules.required"></v-text-field>-->
+              <!--              <v-text-field v-model="stationData.facility_type" label="Facility Type" :rules="rules.required"></v-text-field>-->
             </v-col>
           </v-row>
           <v-row>
@@ -85,7 +67,6 @@
             </v-col>
           </v-row>
           <v-row>
-<!--            <v-col cols="12" sm="4" md="6">-->
             <v-col>
               <v-select
                   v-model="stationData.topic"
@@ -96,16 +77,9 @@
                   label="Topic Hierarchy"
                   :rules="rules.required"
               ></v-select>
-              <!--              <v-text-field v-model="stationData.facility_type" label="Facility Type" :rules="rules.required"></v-text-field>-->
             </v-col>
-<!--            <v-col>-->
-<!--              <v-text-field v-model="stationData.topic" label="Topic Hierarchy" :rules="rules.required"></v-text-field>-->
-<!--            </v-col>-->
           </v-row>
-
-
         </v-container>
-<!--        <v-btn type="submit" block class="mt-2">Submit</v-btn>-->
       </v-form>
       <div class="d-flex flex-column">
         <v-btn
@@ -119,20 +93,19 @@
       </div>
       <v-item style="height: 600px; width: 100%">
         <geometry-editor @geomUpdate="handleGeometryUpdate" v-bind:input-feature="stationData"
-                         ></geometry-editor>
-<!--                         v-on:updateGeometry="handleGeometryUpdate($event)"></geometry-editor>-->
+        ></geometry-editor>
+        <!--                         v-on:updateGeometry="handleGeometryUpdate($event)"></geometry-editor>-->
 
       </v-item>
       <v-spacer/>
-      <!--      <v-container style="height: 400px; width: 100%">-->
-<!--      </v-container>-->
       <v-card-actions>
         <v-spacer/>
         <v-btn color="pink lighten-1" class="mr-1" text @click="close">
           Cancel
         </v-btn>
         <v-spacer/>
-        <v-btn v-if="formTitle=='Add Station'" color="blue darken-1" class="mr-1" text @click="updateStation('insert')" :disabled="!valid">
+        <v-btn v-if="formTitle=='Add Station'" color="blue darken-1" class="mr-1" text @click="updateStation('insert')"
+               :disabled="!valid">
           Add Station
         </v-btn>
         <v-btn v-else color="blue darken-1" class="mr-1" text @click="updateStation('update')" :disabled="!valid">
@@ -144,8 +117,6 @@
       </v-card-actions>
     </v-card>
     <div>
-      <!--      <dataset-map :dataset="stationData"/>-->
-
     </div>
   </v-dialog>
 </template>
@@ -153,41 +124,39 @@
 <script>
 
 const stationSchema = {
-      "id": "",
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          null,
-          null,
-          null
-        ]
-      },
-      "properties": {
-        "name": "",
-        "wigos_station_identifier": "",
-        "facility_type": "",
-        "territory_name": "",
-        "wmo_region": "",
-        "url": "",
-        "topic": "",
-        "status": "",
-        "id": ""
-      },
-      "links": [
-        {
-          "rel": "canonical",
-          "href": "",
-          "type": "application/json",
-          "title": ""
-        }
-      ]
+  "id": "",
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      null,
+      null,
+      null
+    ]
+  },
+  "properties": {
+    "name": "",
+    "wigos_station_identifier": "",
+    "facility_type": "",
+    "territory_name": "",
+    "wmo_region": "",
+    "url": "",
+    "topic": "",
+    "status": "",
+    "id": ""
+  },
+  "links": [
+    {
+      "rel": "canonical",
+      "href": "",
+      "type": "application/json",
+      "title": ""
     }
-
+  ]
+}
 
 
 import GeometryEditor from "@/components/leaflet/GeometryEditor.vue";
-
 
 
 export default {
@@ -206,7 +175,7 @@ export default {
   },
   destroyed() {
     console.log('destroyed')
-    },
+  },
 
   data() {
     return {
@@ -221,18 +190,16 @@ export default {
   },
   watch: {
     formContent(dat) {
-    console.log('new form content', dat)
-      if (dat !== {}){
+      console.log('new form content', dat)
+      if (dat !== {}) {
         this.stationData = dat
       }
     }
   },
-  computed: {
-
-  },
+  computed: {},
 
   methods: {
-    handleGeometryUpdate(newGeom){
+    handleGeometryUpdate(newGeom) {
       console.log("handleGeometryUpdate")
       console.log(newGeom)
       this.featureGeometry = newGeom
@@ -241,7 +208,6 @@ export default {
     validate() {
       const isvalid = this.$refs.form.validate()
       this.valid = isvalid
-
       if (this.valid) alert('Form is valid')
       if (!this.valid) alert('form is not valid')
     },
@@ -250,38 +216,27 @@ export default {
       this.$emit("close-dialog");
     },
     updateStation(eventInfo) {
-
-      console.log(eventInfo)
-      console.log(this.stationData)
-      // "https://oscar.wmo.int/surface/#/search/station/stationReportDetails/0-20000-0-16252"
-      //   "topic": "urn:x-wmo:md:ita:roma_met_centre:surface-weather-observations",
-      //     "href": "http://localhost/oapi/collections/discovery-metadata/items/urn:x-wmo:md:ita:roma_met_centre:surface-weather-observations",
-      //     "title": "urn:x-wmo:md:ita:roma_met_centre:surface-weather-observations"
-      //
       if (eventInfo === 'delete') {
-         //  todo - replace this with a better alert
-         if(confirm("Do you really want to delete?")){
-         //   now delete
-           console.log('relay to delete...')
-           this.submitFunc('delete', this.stationData)
-         }
-      }
-      else {
+        //  todo - replace this with a better alert
+        if (confirm("Do you really want to delete?")) {
+          this.submitFunc('delete', this.stationData)
+        }
+      } else {
         let featureData = {...stationSchema}
         featureData.properties = {...featureData.properties, ...this.stationData}
-        featureData.id = featureData.properties.wigos_station_identifier
+        featureData.id = featureData.properties.id = featureData.properties.wigos_station_identifier
         featureData.geometry.coordinates = this.featureGeometry
-
+        featureData.geometry.coordinates = featureData.geometry.coordinates.map(function (c) {
+          return c === null ? 0 : Math.round(parseFloat(c))
+        })
+        delete featureData.properties.coordinates
+        // links
+        featureData.links.href = `${window.VUE_APP_OAPI}/collections/discovery-metadata/items/${featureData.properties.topic}`
+        featureData.links.title = featureData.properties.topic
         this.submitFunc(eventInfo, featureData)
-
-
       }
       this.$emit("close-dialog");
     },
-
-    getStationData(){
-      return this.formContent
-    }
   },
 };
 </script>
