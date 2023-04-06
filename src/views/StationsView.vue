@@ -228,9 +228,7 @@ export default {
           })
     },
     async handleUpdate(action, updateData) {
-      console.log('handleUpdate')
-      console.log(action)
-      console.log(updateData)
+
       if (action === 'delete') {
         // todo - retry until count is decremented by 1 ?? why is the loadStations beating the Delete??
         await this.deleteStation(updateData.id).then(setTimeout(this.loadStations, 1000))
