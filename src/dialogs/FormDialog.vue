@@ -218,7 +218,7 @@ export default {
     updateStation(eventInfo) {
       if (eventInfo === 'delete') {
         //  todo - replace this with a better alert
-        if (confirm("Do you really want to delete?")) {
+        if (confirm("Do you really want to delete this station?")) {
           this.submitFunc('delete', this.stationData)
         }
       } else {
