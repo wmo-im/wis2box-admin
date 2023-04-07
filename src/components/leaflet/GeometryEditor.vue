@@ -107,7 +107,7 @@ export default {
         return markerLatLng
       }
       else {
-        console.log('error parsing input geometry')
+        // console.log('error parsing input geometry')
         return {lat: null, lng: null}
       }
     },
