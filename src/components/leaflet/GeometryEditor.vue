@@ -1,5 +1,4 @@
 <template>
-  <!--    <l-map :zoom="zoom" :center="this.center" style="height: 100%; width: 100%" ref="leafmap">-->
   <v-lazy>
     <v-img>
       <v-container>
@@ -18,9 +17,7 @@
         </v-form>
       </v-container>
 
-<!--      <l-map @update:center="centerUpdated(center)" :zoom="zoom" :center.sync="this.center" style="height: 400px; width: 100%" ref="leafmap">-->
       <l-map :zoom="zoom" :center.sync="center" style="height: 400px; width: 100%" ref="leafMap">
-        <!--    <l-map :zoom="zoom" :center="this.center" ref="map">-->
         <l-control-layers
             :position="layersPosition"
             :collapsed="true"
@@ -82,7 +79,7 @@ export default {
       zoom: 5,
       layersPosition: 'topright',
       ogInputData: {},
-      center: [0,0],
+      center: this.parseInputGeom(this.inputFeature),
       markerXYPosition: this.parseInputGeom(this.inputFeature),
       elevation: this.inputFeature.coordinates? this.inputFeature.coordinates[2]: null,
       rules: [
@@ -99,15 +96,14 @@ export default {
         this.$emit('geomUpdate', [newVal.lng, newVal.lat, parseFloat(this.elevation)])
       },
       deep: true
-    }
+    },
   },
-
   methods: {
+
     parseInputGeom(inputGeom) {
       if (Object.keys(inputGeom ).length > 0) {
         console.log(inputGeom)
         const markerLatLng = new LatLng(inputGeom.coordinates[1], inputGeom.coordinates[0])
-        this.center = [inputGeom.coordinates[1], inputGeom.coordinates[0]]
         return markerLatLng
       }
       else {
@@ -149,9 +145,6 @@ export default {
         }
       ];
     },
-    centerUpdated(center) {
-      console.log('centerUpdated', center)
-    }
   },
 }
 </script>
