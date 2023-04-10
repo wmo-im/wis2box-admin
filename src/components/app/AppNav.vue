@@ -1,5 +1,6 @@
 <template id="app-nav">
   <div class="app-nav">
+      <v-app-bar-title flat color="#FFFFFF">WIS2.0 Admin Console</v-app-bar-title>
     <v-app-bar flat color="#FFFFFF">
       <v-btn-toggle borderless>
         <v-hover
