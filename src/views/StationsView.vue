@@ -64,7 +64,6 @@
       </v-data-table>
 
     </v-card>
-
   </div>
 </template>
 
@@ -248,7 +247,8 @@ export default {
       parse(csvString, function (err, stations) {
         const headers = stations.shift();
         self.headers = headers.map(function (x) {
-          return {text: clean(x), value: x};
+          return { text: clean(x), value: x };
+
         });
         self.stations = stations.map(function (row) {
           var parsed = {};
