@@ -18,6 +18,7 @@
           :form-title="formTitle"
           :form-content="stationData"
           :station-status="stationStatus"
+          :wmo-regions="wmoRegions"
           :facility-types="facilityTypes"
           :dialog.sync="dialog"
           :submit-func="handleUpdate"
@@ -128,6 +129,16 @@ const stationStatus = [
         {value: 'standBy', title: 'Stand-by'},
         {value: 'unknown', title: 'unknown'}
       ]
+const wmoRegions = [
+  {value: "I", title: "I: Africa"},
+  {value: "II", title: "II: Asia"},
+  {value: "III", title: "III: South America"},
+  {value: "IV", title: "IV: North America, Central America, Caribbean"},
+  {value: "V", title: "V: South-West Pacific"},
+  {value: "VI", title: "VI: Europe"}
+
+]
+
 const facilityTypes = [
   {value: 'airFixed', title: 'Air (fixed)'},
   {value: 'airMobile', title: 'Air (mobile)'},
@@ -164,6 +175,7 @@ export default {
       // todo - get dynamically? from https://codes.wmo.int/wmdr/_ReportingStatus
       stationStatus: stationStatus,
       facilityTypes: facilityTypes,
+      wmoRegions: wmoRegions,
       formTitle: '',
 
     };
@@ -214,7 +226,7 @@ export default {
         }
       })
           .then(function (response) {
-            console.log('...loaded discovery metadta')
+            console.log('...loaded discovery metadata')
             console.log(response)
             if (response.data.features) {
               self.parseDiscoveryMetadata(response.data.features)

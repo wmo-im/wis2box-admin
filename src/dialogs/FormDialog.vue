@@ -62,8 +62,17 @@
                             :rules="rules.required"></v-text-field>
             </v-col>
             <v-col>
-              <v-text-field v-model="stationData.wmo_region" label="WMO Region"
-                            :rules="rules.required" type="number"></v-text-field>
+              <!--              <v-text-field v-model="stationData.wmo_region" label="WMO Region"-->
+              <!--                            :rules="rules.required" type="number"></v-text-field>-->
+              <v-select
+                  v-model="stationData.wmo_region"
+                  :items="this.wmoRegions"
+                  item-text='title'
+                  item-value='value'
+                  item-label="WMO Region"
+                  label="WMO Region"
+                  :rules="rules.required"
+              ></v-select>
             </v-col>
           </v-row>
           <v-row>
@@ -169,6 +178,7 @@ export default {
     formContent: {},
     stationStatus: [],
     facilityTypes: [],
+    wmoRegions:[],
     submitFunc: Function,
     formTitle: null,
     discoData: []
@@ -224,11 +234,8 @@ export default {
       } else {
         let featureData = {...stationSchema}
         featureData.properties = {...featureData.properties, ...this.stationData}
-        featureData.id = featureData.properties.id = featureData.properties.wigos_station_identifier
+        featureData.id = this.stationData.wigos_station_identifier
         featureData.geometry.coordinates = this.featureGeometry
-        featureData.geometry.coordinates = featureData.geometry.coordinates.map(function (c) {
-          return c === null ? 0 : Math.round(parseFloat(c))
-        })
         delete featureData.properties.coordinates
         // links
         featureData.links.href = `${window.VUE_APP_OAPI}/collections/discovery-metadata/items/${featureData.properties.topic}`
