@@ -1,7 +1,7 @@
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
-    publicPath: "./",
+    publicPath: process.env.VUE_APP_PUBlIC_PATH,
 
     transpileDependencies: ["vuetify", "@koumoul/vjsf"],
 
