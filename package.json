@@ -29,6 +29,7 @@
     "json-schema-merge-allof": "^0.8.1",
     "json-schema-ref-parser": "^9.0.9",
     "leaflet": "^1.9.2",
+    "leaflet-draw": "^1.0.4",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "stream-http": "^3.2.0",
     "v-mask": "^2.3.0",

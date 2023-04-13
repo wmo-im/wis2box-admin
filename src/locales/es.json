@@ -24,7 +24,7 @@
     "oafeat": "Observaciones",
     "oarec": "OGC API - Record",
     "dm": "Metadatos de Descubrimiento",
-    "mcf": "Archivo de Control de Metadatos",
+    "discovery_metadata": "Descubrimiento de Metadatos",
     "edit": "Editar",
     "mqp": "PubSub"
   }

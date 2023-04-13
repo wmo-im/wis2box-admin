@@ -1,0 +1,386 @@
+{
+    "version": "http://www.opengis.net/spec/ogcapi-records-1/1.0/req/record-core",
+    "type": "object",
+    "properties": {
+        "properties": {
+            "type": "object",
+            "title": "Properties",
+            "description": "Basic Dataset Information",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "Name of data."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Brief description of data."
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Lower case representation of language in 2-letter code.",
+                    "pattern": "^[a-z]{2}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid 2-letter code."
+                        }
+                    }
+                },
+                "wmo:dataPolicy": {
+                    "type": "string",
+                    "description": "Priority of data within WMO.",
+                    "x-cols": 6,
+                    "enum": [
+                        "core",
+                        "recommended"
+                    ]
+                }
+            },
+            "required": [
+                "title",
+                "description",
+                "language",
+                "wmo:dataPolicy"
+            ]
+        },
+        "poc": {
+            "type": "object",
+            "title": "Contact",
+            "description": "Point of Contact Information",
+            "properties": {
+                "individual": {
+                    "type": "string",
+                    "description": "Full name.",
+                    "x-cols": 6
+                },
+                "positionName": {
+                    "type": "string",
+                    "description": "Position held.",
+                    "x-cols": 6
+                },
+                "organizationName": {
+                    "type": "string",
+                    "description": "Organization name."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "Organization website (including 'http://' or 'https://').",
+                    "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid website URL."
+                        }
+                    }
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Full international phone number, starting with '+'.",
+                    "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid phone number."
+                        }
+                    }
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Contact email address.",
+                    "pattern": "^[a-z0-9\\._-]+@[a-z0-9-]+\\.[a-z0-9\\.-]+$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid email."
+                        }
+                    }
+                },
+                "deliveryPoint": {
+                    "type": "string",
+                    "description": "Street address."
+                },
+                "city": {
+                    "type": "string",
+                    "description": "Mailing city.",
+                    "x-cols": 6
+                },
+                "administrativeArea": {
+                    "type": "string",
+                    "description": "Mailing state or region.",
+                    "x-cols": 6
+                },
+                "postalCode": {
+                    "type": "string",
+                    "description": "Mailing postal code.",
+                    "x-cols": 6
+                },
+                "country": {
+                    "type": "string",
+                    "description": "Upper case representation of ISO3166 3-letter code.",
+                    "pattern": "^[A-Z]{3}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid 3-letter code."
+                        }
+                    }
+                },
+                "hoursOfService": {
+                    "type": "string",
+                    "description": "Normal weekday contact hours. (In 24hr format with timezone code.)",
+                    "pattern": "^[0-9]{4}h\\s-\\s[0-9]{4}h\\s[A-Z0-9]{3}$",
+                    "default": "0900h - 1700h UTC",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid time range."
+                        }
+                    }
+                },
+                "contactInstructions": {
+                    "type": "string",
+                    "description": "Preffered contact method.",
+                    "x-cols": 6,
+                    "enum": [
+                        "email",
+                        "phone"
+                    ],
+                    "default": "email"
+                }
+            },
+            "required": [
+                "individual",
+                "positionName",
+                "organizationName",
+                "url",
+                "phone",
+                "email",
+                "city",
+                "administrativeArea",
+                "country",
+                "hoursOfService"
+            ]
+        },
+        "distrib": {
+            "type": "object",
+            "title": "Distributor",
+            "description": "Distributor Information",
+            "properties": {
+                "duplicateFromContact": {
+                    "type": "boolean",
+                    "description": "Use point of contact information as distributor information too."
+                },
+                "individual": {
+                    "type": "string",
+                    "description": "Full name.",
+                    "x-cols": 6
+                },
+                "positionName": {
+                    "type": "string",
+                    "description": "Position held.",
+                    "x-cols": 6
+                },
+                "organizationName": {
+                    "type": "string",
+                    "description": "Organization name."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "Organization website (including 'http://' or 'https://').",
+                    "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid website URL."
+                        }
+                    }
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Full international phone number, starting with '+'.",
+                    "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid phone number."
+                        }
+                    }
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Contact email address.",
+                    "pattern": "^[a-z0-9\\._-]+@[a-z0-9-]+\\.[a-z0-9\\.-]+$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid email."
+                        }
+                    }
+                },
+                "deliveryPoint": {
+                    "type": "string",
+                    "description": "Street address."
+                },
+                "city": {
+                    "type": "string",
+                    "description": "Mailing city.",
+                    "x-cols": 6
+                },
+                "administrativeArea": {
+                    "type": "string",
+                    "description": "Mailing state or region.",
+                    "x-cols": 6
+                },
+                "postalCode": {
+                    "type": "string",
+                    "description": "Mailing postal code.",
+                    "x-cols": 6
+                },
+                "country": {
+                    "type": "string",
+                    "description": "Upper case representation of ISO3166 3-letter code.",
+                    "pattern": "^[A-Z]{3}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid 3-letter code."
+                        }
+                    }
+                },
+                "hoursOfService": {
+                    "type": "string",
+                    "description": "Normal weekday contact hours. (In 24hr format with timezone code.)",
+                    "pattern": "^[0-9]{4}h\\s-\\s[0-9]{4}h\\s[A-Z0-9]{3}$",
+                    "default": "0900h - 1700h UTC",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid time range."
+                        }
+                    }
+                },
+                "contactInstructions": {
+                    "type": "string",
+                    "description": "Preffered contact method.",
+                    "x-cols": 6,
+                    "enum": [
+                        "email",
+                        "phone"
+                    ],
+                    "default": "email"
+                }
+            },
+            "required": [
+                "individual",
+                "positionName",
+                "organizationName",
+                "url",
+                "phone",
+                "email",
+                "city",
+                "administrativeArea",
+                "country",
+                "hoursOfService"
+            ]
+        },
+        "settings": {
+            "type": "object",
+            "title": "Settings",
+            "description": "Dataset Publication Settings",
+            "properties": {
+                "centre_id": {
+                    "type": "string",
+                    "description": "Agency acronym (in lower case), as specified by member.",
+                    "pattern": "^[a-z]{2,}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid agency name."
+                        }
+                    }
+                },
+                "retention": {
+                    "type": "string",
+                    "description": "Minimum length of time data should be retained in WIS2.",
+                    "default": "30d",
+                    "enum": [
+                        "1h",
+                        "1d",
+                        "7d",
+                        "14d",
+                        "30d"
+                    ],
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid retention option."
+                        }
+                    }
+                },
+                "dateStarted": {
+                    "type": "string",
+                    "description": "Date on which the data began to be collected.",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid date format."
+                        }
+                    }
+                },
+                "dateStopped": {
+                    "type": "string",
+                    "description": "Date on which the data stopped begin collected. (Leave blank if ongoing. Duplicate 'dateStarted' to indicate data from a single instance.",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid date format."
+                        }
+                    }
+                },
+                "keywords": {
+                    "type": "array",
+                    "description": "Search keywords for data, at least 3. (ex: https://github.com/wmo-im/wcmp-codelists/blob/main/codelists/WMO_CategoryCode.csv)",
+                    "minItems": 3,
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "identifier": {
+                    "type": "string",
+                    "description": "Unique identifier for this data.",
+                    "pattern": "^[a-z]{3}:[a-z0-9_-]+:[a-z0-9_-]+[a-z0-9:]*$",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid unique identifier."
+                        }
+                    }
+                },
+                "topicHierarchy": {
+                    "type": "string",
+                    "pattern": "^[a-z]{3}\\.[_a-z]+\\.(data|metadata|reports)\\.(core|recommended)\\.[\\w]+\\.[\\w-]+[\\.\\w]*$",
+                    "description": "Unique hierarchy for this data. (Usually similar to the identifier.",
+                    "x-options":{
+                        "messages":  {
+                            "pattern":  "Invalid topic hierarchy."
+                        }
+                    }
+                }
+            },
+            "required": [
+                "centre_id",
+                "retention",
+                "dateStarted",
+                "keywords",
+                "identifier",
+                "topicHierarchy"
+            ]
+        }
+    },
+    "required": [
+        "properties",
+        "poc",
+        "distrib",
+        "settings"
+    ]
+}
