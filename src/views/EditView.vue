@@ -1,7 +1,7 @@
 <template id="edit-view">
   <div class="edit-view">
     <v-card>
-      <discovery-metadata-form :topic="topic" />
+      <discovery-metadata-form class="mb-8" :topic="topic" />
     </v-card>
   </div>
 </template>

@@ -1,11 +1,12 @@
 <template>
     <v-lazy>
         <v-img>
-        <l-map 
+        <l-map
+            ref="map"
             :zoom="zoom" 
             :center.sync="rectangle.center" 
+            @ready="$emit('loaded')"
             style="height: 300px; width: 100%" 
-            ref="leafMap"
         >
             <l-control-layers
                 position="bottomleft"
@@ -77,21 +78,28 @@ export default {
     watch: {
         bounds: {
             handler(input) {
-                this.$emit('geomUpdate', [input.getNorth(), input.getEast(), input.getSouth(), input.getWest()])
+                this.$emit('updated', [input.getNorth(), input.getEast(), input.getSouth(), input.getWest()])
             },
             deep: true
         },
         inputFeature: {
             handler(input) {
+                console.log("updating map")
                 if (input.length === 4) {
+                    const zoom_factor = 0.05
                     var topleft = new LatLng(input[0], input[1])
                     var bottomright = new LatLng(input[2], input[3])
                     var tmp = new LatLngBounds(topleft, bottomright)
                     this.rectangle.center = tmp.getCenter()
                     this.rectangle.bounds = [tmp.getNorthWest(), tmp.getSouthEast()]
+                    this.$refs.map.mapObject.fitBounds([
+                        [input[0] + zoom_factor, input[1] + zoom_factor],
+                        [input[2] - zoom_factor, input[3] - zoom_factor]
+                    ])
                     this.rectangle.visible = true
                 }
                 else {
+                    this.zoom = 1.5
                     this.rectangle.center = [0, 0]
                     this.rectangle.bounds = [[0, 0], [0, 0]]
                     this.rectangle.visible = false
@@ -101,15 +109,6 @@ export default {
         }
     },
     methods: {
-        //refreshGeometry(someEvent) {
-        //    console.log('refreshGeometry', someEvent)
-        //    if (this.markerXYPosition.lat === null | this.markerXYPosition.lng === null) {
-        //        const currentCenter = this.$refs.leafMap.mapObject.getCenter()
-        //        this.markerXYPosition = currentCenter
-        //    }
-        //    //this.$emit('geomUpdate', [this.markerXYPosition.lng, this.markerXYPosition.lat, this.elevation])
-        //    this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
-        //},
         loadBasemaps() {
             return [
                 {
