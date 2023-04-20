@@ -15,7 +15,7 @@
             v-model="identifier"
             :items="items"
             dense
-            @change="loadMetadata(identifier)"
+            @change="loadMetadata()"
           ></v-select>
         </div>
 
@@ -65,7 +65,7 @@
           class="ma-2" 
           title="Export" 
           @click="downloadMetadata()"
-          :disabled="!validated" 
+          :disabled="!validated || !filled" 
           v-if="validated"
         >
           export
@@ -76,8 +76,8 @@
           color="#009900" 
           class="ma-2" 
           title="Submit"
-          
-          :disabled="!validated" 
+          @click = "submitMetadata()"
+          :disabled="!validated || !filled || !form.modified" 
           v-if="validated"
         >
           submit
@@ -86,8 +86,8 @@
 
       </v-toolbar>
 
-      <v-card color="#DDD" dark flat v-if="errored" class="pa-5">
-        <p class="black--text ma-0">Error loading discovery metadata.</p>
+      <v-card color="#DDD" dark flat v-if="!loaded" class="pa-5">
+        <p class="black--text ma-0">{{ message }}</p>
       </v-card>
 
     </v-card>
@@ -120,12 +120,13 @@ export default {
       loaded: false,
       working: false,
       validated: false,
-      errored: false,
       filled: false,
+      message: "Select a discovery metadata file.",
       items: [],
       identifier: "",
       defaults: {},
       model: {},
+      is_new: false,
       schema: {},
       options: {
         // icons: { calendar: null, clock: null },
@@ -133,9 +134,10 @@ export default {
         rootDisplay: "stepper",
       },
       form: {
-        bounds: null,
-        initialized: false,
-        manual_ids: false
+        bounds: [0],
+        initialized: true,
+        modified: false,
+        manual_ids: true
       }
     }
   },
@@ -158,33 +160,43 @@ export default {
         .catch(function (error) {
           console.log(error)
           self.items = ["Create New..."]
-          self.errored = true
+          self.message = "Error loading discovery metadata list."
         })
     },
-    async loadMetadata(identifier) {
+    async loadMetadata() {
       var self = this
       this.loaded = false
       this.working = true
+      this.message = "Working..."
+      this.form.modified = false
 
-      if (identifier === "Create New...") {
+      if (self.identifier === "Create New...") {
         self.defaults = {}
-        self.errored = false
+        self.form.bounds = [0]
+        self.form.initialized = false
+        self.form.manual_ids = false
+        self.validated = false
+        self.is_new = true
       }
       else {
         //var self = this
         //var cc = this.topic.split(".")[0]
-        var url = `${oapi}/collections/discovery-metadata/items/${identifier}`
+        self.is_new = false
+        self.validated = true
+        var url = `${oapi}/collections/discovery-metadata/items/${self.identifier}`
         await this.$http({
           method: "get",
           url: url,
         })
           .then(function (response) {
+            //console.log(response.data)
             self.defaults = self.demodulateModel(response.data)
+            //console.log(self.defaults)
             self.form.initialized = true
           })
           .catch(function (error) {
             console.log(error)
-            self.errored = true
+            self.message = "Error loading discovery metadata file."
           })
         }
 
@@ -201,18 +213,42 @@ export default {
         }
       })
 
-      if (!self.errored) {
+      if (!self.message.includes("Error")) {
         self.model = self.defaults
         self.loaded = true
       }
       self.working = false
+      self.message = "Select a discovery metadata file."
     },
     resetMetadata() {
       this.model = this.defaults
       this.form.initialized = false
     },
-    validateMetadata() {
-      this.validated = true
+    async validateMetadata() {
+      var self = this
+      await this.$http({
+        method: "post",
+        url: `${oapi}/processes/pywcmp-wis2-topics-validate/execution`,
+        data: {
+          "inputs": {
+            "topic": `origin/a/wis2/${self.model.settings.topicHierarchy}`,
+            "fuzzy": true
+          }
+        }
+      })
+        .then(function (response) {
+          console.log(response.data)
+          if (response.data.topic_is_valid) {
+            self.validated = true
+          }
+          else {
+            alert("Invalid topic hierarchy. Please modify.")
+          }
+        })
+        .catch(function (error) {
+          console.log(error)
+          alert("Error validating topic hierarchy.")
+        })
     },
     downloadMetadata() {
       var content = encodeURI(JSON.stringify(this.modulateModel(this.model), null, 4))
@@ -221,6 +257,39 @@ export default {
       element.target = "_blank"
       element.download = "discovery-metadata.json"
       element.click()
+    },
+    async submitMetadata() {
+      var self = this
+      if (self.is_new) {
+        await this.$http({
+          method: "post",
+          url: `${oapi}/collections/discovery-metadata/items`,
+          data: self.modulateModel(self.model)
+        })
+          .then(function (response) {
+            console.log(response.data)
+            //window.location.href = "admin"
+          })
+          .catch(function (error) {
+            console.log(error)
+            alert("Error adding discovery metadata.")
+          })
+      }
+      else {
+        await this.$http({
+          method: "put",
+          url: `${oapi}/collections/discovery-metadata/items/${self.model.settings.identifier}`,
+          data: self.modulateModel(self.model)
+        })
+          .then(function (response) {
+            console.log(response.data)
+            //window.location.href = "admin"
+          })
+          .catch(function (error) {
+            console.log(error)
+            alert("Error updating discovery metadata.")
+          })
+      }
     },
     loadGeometry() {
       this.updateModel({"fullKey": "origin.northLatitude"})
@@ -236,7 +305,7 @@ export default {
       }
     },
     updateModel($event) {
-      this.validated = false
+      this.form.modified = true
 
       // Pre-fill form with automatic values.
       if (!this.form.initialized) {
@@ -270,6 +339,7 @@ export default {
         ($event.fullKey === "settings.topicHierarchy")
       ) {
         this.form.manual_ids = true
+        this.validated = false
       }
 
       // Auto-fill topic identifiers.
@@ -288,6 +358,7 @@ export default {
           ("wmo:dataPolicy" in this.model.properties) &&
           !this.form.manual_ids
         ) {
+          this.validated = false
           this.model.settings.identifier = 
             `urn:x-wmo:md:${this.model.poc.country.toLowerCase()}:${this.model.origin.centre_id.toLowerCase()}:weather-observations`
           this.model.settings.topicHierarchy = 
@@ -417,7 +488,7 @@ export default {
       output["properties"] = input.properties
       output["properties"]["type"] = "dataset"
       output["properties"]["wmo:topicHierarchy"] = `origin/a/wis2/${input.settings.topicHierarchy}`
-      output["properties"]["wmo:dataPolicy"] = { "name": input.settings["wmo:dataPolicy"] }
+      output["properties"]["wmo:dataPolicy"] = input.settings["wmo:dataPolicy"]
       output["properties"]["updated"] = today.toISOString().split('T')[0]
       if (!("created" in output["properties"])) {
         output["properties"]["created"] = today.toISOString().split('T')[0]
@@ -586,7 +657,7 @@ export default {
       output.settings["retention"] = input.properties.wis2box.retention
 
       output.settings["wmo:dataPolicy"] = "core"
-      if ("wmo:dataPolicy" in input.properties) output.settings["wmo:dataPolicy"] = input.properties["wmo:dataPolicy"]["name"]
+      if ("wmo:dataPolicy" in input.properties) output.settings["wmo:dataPolicy"] = input.properties["wmo:dataPolicy"]
 
       output.settings["keywords"] = []
       input.properties.themes.forEach(function (theme) {

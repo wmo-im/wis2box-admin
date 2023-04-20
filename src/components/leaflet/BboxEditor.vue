@@ -3,7 +3,7 @@
         <v-img>
         <l-map
             ref="map"
-            :zoom="zoom" 
+            :zoom="1.5" 
             :center.sync="rectangle.center" 
             @ready="$emit('loaded')"
             style="height: 300px; width: 100%" 
@@ -66,13 +66,11 @@ export default {
     data() {
         return {
             tileProviders: this.loadBasemaps(),
-            zoom: 1.5,
             rectangle: {
                 visible: false,
                 center: [0, 0],
                 bounds: [[0, 0], [0, 0]]
             }
-            //elevation: this.inputFeature.coordinates? this.inputFeature.coordinates[2]: null,
         }
     },
     watch: {
@@ -84,7 +82,6 @@ export default {
         },
         inputFeature: {
             handler(input) {
-                console.log("updating map")
                 if (input.length === 4) {
                     const zoom_factor = 0.05
                     var topleft = new LatLng(input[0], input[1])
@@ -99,7 +96,7 @@ export default {
                     this.rectangle.visible = true
                 }
                 else {
-                    this.zoom = 1.5
+                    this.$refs.map.mapObject.setZoom(1.5)
                     this.rectangle.center = [0, 0]
                     this.rectangle.bounds = [[0, 0], [0, 0]]
                     this.rectangle.visible = false
