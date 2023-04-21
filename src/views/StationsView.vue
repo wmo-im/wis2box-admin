@@ -69,8 +69,8 @@
 </template>
 
 <script>
-import {clean} from "@/scripts/helpers.js";
-import {parse} from "csv-parse";
+// import {clean} from "@/scripts/helpers.js";
+// import {parse} from "csv-parse";
 // import stations_list from "@/metadata/station/station_list.csv";
 import FormDialog from "../dialogs/FormDialog.vue"
 // import {stat} from "@babel/core/lib/gensync-utils/fs";
@@ -241,7 +241,7 @@ export default {
     async handleUpdate(action, updateData) {
 
       if (action === 'delete') {
-        // todo - retry until count is decremented by 1 ?? why is the loadStations beating the Delete??
+        // todo - retry until count is decremented by 1 ?
         await this.deleteStation(updateData.id).then(setTimeout(this.loadStations, 1000))
       }
       else if (action === 'insert') {
@@ -251,26 +251,25 @@ export default {
         await this.updateStation(updateData).then(setTimeout(this.loadStations, 1000))
 
       }
-      // this.loadStations();
     },
-    parseCSV(csvString) {
-      var self = this;
-      this.headers = [];
-      parse(csvString, function (err, stations) {
-        const headers = stations.shift();
-        self.headers = headers.map(function (x) {
-          return { text: clean(x), value: x };
-
-        });
-        self.stations = stations.map(function (row) {
-          var parsed = {};
-          for (var i = 0; i < headers.length; i++) {
-            parsed[headers[i]] = row[i];
-          }
-          return parsed;
-        });
-      });
-    },
+    // parseCSV(csvString) {
+    //   var self = this;
+    //   this.headers = [];
+    //   parse(csvString, function (err, stations) {
+    //     const headers = stations.shift();
+    //     self.headers = headers.map(function (x) {
+    //       return { text: clean(x), value: x };
+    //
+    //     });
+    //     self.stations = stations.map(function (row) {
+    //       var parsed = {};
+    //       for (var i = 0; i < headers.length; i++) {
+    //         parsed[headers[i]] = row[i];
+    //       }
+    //       return parsed;
+    //     });
+    //   });
+    // },
     openDialog(station_id) {
       if (station_id == null) {
         this.formTitle = 'Add Station'
@@ -287,35 +286,24 @@ export default {
       this.dialog = true
     },
     parseStations(stationsCollection) {
-      console.log('parseStations')
+      // console.log('parseStations')
       const self = this
-      // let stationHeaders = {}
-      // stationHeaders = Object.keys(stationsCollection.features[0].properties).map(function (x) {
-      //     return {text: clean(x), value: x};
-      // });
-      // self.headers = [...stationHeaders, ...actionControls]
       self.headers = stationHeaders
       self.stations = stationsCollection.features.map(station => {return {...station.properties, ...station.geometry}})
-      // self.stations = stationsCollection.features
     },
     async insertStation(stnInfo) {
       delete stnInfo.properties.coordinates
-      stnInfo.geometry.coordinates = stnInfo.geometry.coordinates.map(function (c) {
-        return c===null?0:Math.round(parseFloat(c))
-      })
-      console.log(stnInfo)
-      console.log(stnInfo)
+      // console.log(stnInfo)
       await this.$http({
         method: 'post',
-        // url: oAPI+`/collections/stations/items/${stnInfo.id}`,
         url: oAPI+`/collections/stations/items`,
         data: stnInfo,
         headers: {'Content-Type': 'application/geo+json', 'accept': "*/*"}
       })
-          .then(function (response) {
-            console.log('added station with response', response.status)
-            console.log(response)
-          })
+          // .then(function (response) {
+          //   console.log('added station with response', response.status)
+          //   console.log(response)
+          // })
           .catch(function (error) {
             console.log(error)
           })
@@ -332,21 +320,19 @@ export default {
         data: stnInfo,
         headers: {'Content-Type': 'application/json'}
       })
-          .then(function (response) {
-            console.log('updated station with response', response.status)
-            console.log(response)
-          })
+          // .then(function (response) {
+          //   console.log('updated station with response', response.status)
+          //   console.log(response)
+          // })
           .catch(function (error) {
             console.log(error)
           })
     },
     async deleteStation(stationID) {
       console.log('deleteStation')
-      // const self = this
       await this.$http({
         method: 'delete',
         url: oAPI + `/collections/stations/items/${stationID}`,
-        // headers: {'Content-Type': 'application/json'}
       })
           .then(function (response) {
             console.log('...deleted station')

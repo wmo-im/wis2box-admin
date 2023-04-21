@@ -4,16 +4,16 @@
       <v-container>
         <v-form>
           <v-row>
-            <v-text-field :rules="this.rules" label="Lat" variant="outlined" v-model="markerXYPosition.lat"
+            <v-text-field :rules="this.rules" label="Lat" variant="outlined" v-model.number="markerXYPosition.lat"
                           prepend-icon="mdi:map-marker-plus" type="number"></v-text-field>
-            <v-text-field :rules="this.rules" label="Lon" variant="outlined" v-model="markerXYPosition.lng"
+            <v-text-field :rules="this.rules" label="Lon" variant="outlined" v-model.number="markerXYPosition.lng"
                           prepend-icon="mdi:map-marker-plus-outline" type="number"></v-text-field>
-            <v-text-field :rules="this.rules" label="Elevation" variant="outlined" v-model="elevation"
+            <v-text-field :rules="this.rules" label="Elevation" variant="outlined" v-model.number="elevation"
                           prepend-icon="mdi:elevation-rise" type="number"></v-text-field>
           </v-row>
-          <v-row>
-            <v-btn color="blue" @click="refreshGeometry()" block>Update Map</v-btn>
-          </v-row>
+<!--          <v-row>-->
+<!--            <v-btn color="blue" @click="refreshGeometry()" block>Update Map</v-btn>-->
+<!--          </v-row>-->
         </v-form>
       </v-container>
 
@@ -47,7 +47,7 @@
             layer-type="base"
         />
 
-        <l-marker v-if="markerXYPosition.lat!==null && markerXYPosition.lng !== null" :autoPan="true" :autofocus="true" ref="mapMarker" :lat-lng.sync="markerXYPosition" :draggable="true"></l-marker>
+        <l-marker v-if="markerXYPosition.lat!==null && markerXYPosition.lng !== null" :autoPan="false" :autofocus="false" ref="mapMarker" :lat-lng.sync="markerXYPosition" :draggable="true"></l-marker>
         <!--    <l-marker :lat-lng="markerLatLng"></l-marker>-->
       </l-map>
     </v-img>
@@ -81,10 +81,10 @@ export default {
       ogInputData: {},
       center: this.parseInputGeom(this.inputFeature),
       markerXYPosition: this.parseInputGeom(this.inputFeature),
-      elevation: this.inputFeature.coordinates? this.inputFeature.coordinates[2]: null,
+      elevation: this.inputFeature.coordinates? this.inputFeature.coordinates[2]: 0,
       rules: [
         value => {
-          if (value | String(value) ==='0') return true
+          if (value | String(parseFloat(value)) ==='0') return true
           return 'Required!'
         },
       ],
@@ -93,7 +93,13 @@ export default {
   watch: {
     markerXYPosition: {
       handler(newVal) {
-        this.$emit('geomUpdate', [newVal.lng, newVal.lat, parseFloat(this.elevation)])
+        console.log(newVal)
+        this.$emit('geomUpdate', [parseFloat(newVal.lng), parseFloat(newVal.lat), parseFloat(this.elevation)])
+        // when dragging the marker - the timeout helps reduce the jittering
+        setTimeout(() => {
+                  this.$refs.leafMap.mapObject.invalidateSize()
+        this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
+        }, 500)
       },
       deep: true
     },
@@ -104,11 +110,15 @@ export default {
       if (Object.keys(inputGeom ).length > 0) {
         console.log(inputGeom)
         const markerLatLng = new LatLng(inputGeom.coordinates[1], inputGeom.coordinates[0])
+        this.$emit('geomUpdate', [markerLatLng.lng, markerLatLng.lng, inputGeom.coordinates[2]])
+
         return markerLatLng
       }
       else {
         // console.log('error parsing input geometry')
-        return {lat: null, lng: null}
+
+        this.$emit('geomUpdate', [0, 0, 0])
+        return {lat: 0, lng: 0}
       }
     },
     refreshGeometry(someEvent) {
@@ -117,7 +127,7 @@ export default {
         const currentCenter = this.$refs.leafMap.mapObject.getCenter()
         this.markerXYPosition = currentCenter
       }
-      this.$emit('geomUpdate', [this.markerXYPosition.lng, this.markerXYPosition.lat, this.elevation])
+      this.$emit('geomUpdate', [parseFloat(this.markerXYPosition.lng), parseFloat(this.markerXYPosition.lat), parseFloat(this.elevation)])
       this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
     },
     loadBasemaps() {

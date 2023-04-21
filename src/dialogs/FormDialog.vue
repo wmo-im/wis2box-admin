@@ -107,7 +107,7 @@
 
       </v-item>
       <v-spacer/>
-      <v-card-actions>
+        <v-card-actions>
         <v-spacer/>
         <v-btn color="pink lighten-1" class="mr-1" text @click="close">
           Cancel
@@ -195,7 +195,7 @@ export default {
         required: [v => !!v || 'Required!'],
         // numeric: [x => x.match(/^\d+$/)===true || 'Must be integer!']
       },
-      featureGeometry: {}
+      featureGeometry: []
     }
   },
   watch: {
@@ -203,6 +203,7 @@ export default {
       console.log('new form content', dat)
       if (dat !== {}) {
         this.stationData = dat
+        // this.featureGeometry = this.stationData.coordinates
       }
     }
   },
@@ -234,8 +235,9 @@ export default {
       } else {
         let featureData = {...stationSchema}
         featureData.properties = {...featureData.properties, ...this.stationData}
-        featureData.id = this.stationData.wigos_station_identifier
+        featureData.id = featureData.properties.id = this.stationData.wigos_station_identifier
         featureData.geometry.coordinates = this.featureGeometry
+        featureData.properties.url = `https://oscar.wmo.int/surface/#/search/station/stationReportDetails/${featureData.id}`
         delete featureData.properties.coordinates
         // links
         featureData.links.href = `${window.VUE_APP_OAPI}/collections/discovery-metadata/items/${featureData.properties.topic}`
