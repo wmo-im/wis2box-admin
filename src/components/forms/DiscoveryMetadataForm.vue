@@ -5,7 +5,7 @@
 
       <v-toolbar color="#014e9e" dark flat>
 
-        <v-toolbar-title v-html="$t(`datasets.discovery_metadata`)" />
+        <v-toolbar-title v-html="$t(`datasets.dm`)" />
 
         <v-spacer />
 
@@ -583,7 +583,7 @@ export default {
       output["links"] = []
       output.links.push({
         "rel": "collection",
-        "href": `http://localhost/oapi/collections/${input.settings.identifier}`,
+        "href": `${oapi}/oapi/collections/${input.settings.identifier}`,
         "type": "OAFeat",
         "title": input.settings.identifier
       })
@@ -596,7 +596,7 @@ export default {
       })
       output.links.push({
         "rel": "canonical",
-        "href": `http://localhost/oapi/collections/discovery-metadata/items/${input.settings.identifier}`,
+        "href": `${oapi}/oapi/collections/discovery-metadata/items/${input.settings.identifier}`,
         "type": "OARec",
         "title": input.settings.identifier
       })

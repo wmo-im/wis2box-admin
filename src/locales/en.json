@@ -23,8 +23,7 @@
     "messages": "WIS 2.0 Messages",
     "oafeat": "Observations",
     "oarec": "OGC API - Record",
-    "dm": "Discovery mMetadata",
-    "discovery_metadata": "Discovery Metadata",
+    "dm": "Discovery Metadata",
     "edit": "Edit",
     "mqp": "PubSub"
   }
