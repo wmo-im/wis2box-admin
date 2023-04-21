@@ -5,7 +5,7 @@
             ref="map"
             :zoom="1.5" 
             :center.sync="rectangle.center" 
-            @ready="$emit('loaded')"
+            @ready="loadMapObjects()"
             style="height: 300px; width: 100%" 
         >
             <l-control-layers
@@ -13,20 +13,6 @@
                 :collapsed="true"
                 :sort-layers="true"
             />
-    <!--        <l-control position='topright'>-->
-    <!--          <v-btn-->
-    <!--              fab-->
-    <!--              dark-->
-    <!--              color="blue"-->
-    <!--              small-->
-    <!--          >-->
-    <!--            <v-icon dark>-->
-    <!--              mdi-plus-->
-    <!--            </v-icon>-->
-    <!--          </v-btn>-->
-
-    <!--        </l-control>-->
-            <!--    <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>-->
             <l-tile-layer
                 v-for="tileProvider in tileProviders"
                 :key="tileProvider.name"
@@ -36,22 +22,24 @@
                 :attribution="tileProvider.attribution"
                 layer-type="base"
             />
-            <l-rectangle 
-                v-if="rectangle.visible" 
-                :autoPan="true"
-                :autofocus="true"
-                :bounds.sync="rectangle.bounds"
-                :draggable="true"
-            ></l-rectangle>
+            <l-feature-group ref="features">
+                <l-rectangle 
+                    v-if="rectangle.visible" 
+                    :autoPan="true"
+                    :autofocus="true"
+                    :bounds.sync="rectangle.bounds"
+                    :draggable="true"
+                ></l-rectangle>
+            </l-feature-group>
         </l-map>
         </v-img>
     </v-lazy>
 </template>
 
 <script>
-import { LMap, LTileLayer, LControlLayers, LRectangle } from 'vue2-leaflet'
+import { LMap, LTileLayer, LControlLayers, LRectangle, LFeatureGroup } from "vue2-leaflet"
 import { LatLng, LatLngBounds } from "leaflet"
-//import { LDraw } from 'leaflet-draw'
+//todo import { LDraw } from 'leaflet-draw'
 export default {
     name: "BboxEditor",
     components: {
@@ -59,6 +47,7 @@ export default {
         LTileLayer,
         LRectangle,
         LControlLayers,
+        LFeatureGroup
     },
     props: {
         inputFeature: {},
@@ -106,6 +95,13 @@ export default {
         }
     },
     methods: {
+        loadMapObjects() {
+            this.$refs.map.mapObject.on("draw:created", (event) => {
+                console.log(event)
+            })
+            this.$emit('loaded')
+        },
+
         loadBasemaps() {
             return [
                 {
@@ -136,5 +132,4 @@ export default {
 
 <style>
 @import "~leaflet/dist/leaflet.css";
-@import "~leaflet-draw/dist/leaflet.draw.css";
 </style>

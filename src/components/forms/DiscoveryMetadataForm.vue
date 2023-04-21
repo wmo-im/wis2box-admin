@@ -77,8 +77,8 @@
           class="ma-2" 
           title="Submit"
           @click = "submitMetadata()"
-          :disabled="!validated || !filled || !form.modified" 
-          v-if="validated"
+          :disabled="!validated || !filled"
+          v-if="validated && form.modified"
         >
           submit
           <v-icon>mdi-cloud-upload</v-icon>
@@ -142,11 +142,15 @@ export default {
     }
   },
   mounted() {
-    this.loadList()
+    var tmp = window.location.href.split("/")
+    this.loadList(tmp[tmp.length - 1])
   },
   methods: {
-    async loadList() {
+
+    async loadList(identifier) {
       var self = this
+
+      // Load list.
       await this.$http({
         method: "get",
         url: `${oapi}/collections/discovery-metadata/items`
@@ -162,7 +166,14 @@ export default {
           self.items = ["Create New..."]
           self.message = "Error loading discovery metadata list."
         })
+
+      // Load specific file, if specified.
+      if (self.items.includes(identifier)) {
+        self.identifier = identifier
+        await self.loadMetadata()
+      }
     },
+
     async loadMetadata() {
       var self = this
       this.loaded = false
@@ -179,8 +190,6 @@ export default {
         self.is_new = true
       }
       else {
-        //var self = this
-        //var cc = this.topic.split(".")[0]
         self.is_new = false
         self.validated = true
         var url = `${oapi}/collections/discovery-metadata/items/${self.identifier}`
@@ -220,36 +229,70 @@ export default {
       self.working = false
       self.message = "Select a discovery metadata file."
     },
+
     resetMetadata() {
       this.model = this.defaults
       this.form.initialized = false
     },
+
     async validateMetadata() {
       var self = this
-      await this.$http({
-        method: "post",
-        url: `${oapi}/processes/pywcmp-wis2-topics-validate/execution`,
-        data: {
-          "inputs": {
-            "topic": `origin/a/wis2/${self.model.settings.topicHierarchy}`,
-            "fuzzy": true
-          }
-        }
-      })
-        .then(function (response) {
-          console.log(response.data)
-          if (response.data.topic_is_valid) {
-            self.validated = true
-          }
-          else {
-            alert("Invalid topic hierarchy. Please modify.")
+      var is_valid = true
+
+      // Validate topic hierachy.
+      //await this.$http({
+      // method: "post",
+      //  url: `${oapi}/processes/pywcmp-wis2-topics-validate/execution`,
+      //  data: {
+      //    "inputs": {
+      //      "topic": `origin/a/wis2/${self.model.settings.topicHierarchy}`,
+      //      "fuzzy": true
+      //    }
+      //  }
+      //})
+      //  .then(function (response) {
+      //    if (!response.data.topic_is_valid) {
+      //      is_valid = false
+      //      alert("Topic hierarchy is invalid.")
+      //    }
+      //  })
+      //  .catch(function (error) {
+      //    console.log(error)
+      //    is_valid = false
+      //    alert("Error validating topic hierarchy.")
+      //  })
+
+      // Validate entire WCMP2.
+      if (is_valid) {
+        await this.$http({
+          method: "post",
+          url: `${oapi}/processes/pywcmp-wis2-wcmp2-ets/execution`,
+          data: {
+            "inputs": {
+              "record": self.modulateModel(self.model)
+            }
           }
         })
-        .catch(function (error) {
-          console.log(error)
-          alert("Error validating topic hierarchy.")
-        })
+          .then(function (response) {
+            console.log(response.data)
+            if (("code" in response.data)) {
+              is_valid = false
+              alert(response.data.description)
+            }
+          })
+          .catch(function (error) {
+            console.log(error)
+            is_valid = false
+            alert("Error validating WCMP2 schema.")
+          })
+      }
+      
+      // Update UI.
+      if (is_valid) {
+        self.validated = true
+      }
     },
+
     downloadMetadata() {
       var content = encodeURI(JSON.stringify(this.modulateModel(this.model), null, 4))
       var element = document.createElement("a")
@@ -258,8 +301,11 @@ export default {
       element.download = "discovery-metadata.json"
       element.click()
     },
+
     async submitMetadata() {
       var self = this
+
+      // POST new.
       if (self.is_new) {
         await this.$http({
           method: "post",
@@ -267,23 +313,33 @@ export default {
           data: self.modulateModel(self.model)
         })
           .then(function (response) {
-            console.log(response.data)
-            //window.location.href = "admin"
+            if (response.status === 201) {
+              window.location.href = "/"
+            }
+            else {
+              alert(response.data.description)
+            }
           })
           .catch(function (error) {
             console.log(error)
             alert("Error adding discovery metadata.")
           })
       }
+
+      // PUT updated.
       else {
         await this.$http({
           method: "put",
-          url: `${oapi}/collections/discovery-metadata/items/${self.model.settings.identifier}`,
+          url: `${oapi}/collections/discovery-metadata/items/${self.defaults.settings.identifier}`,
           data: self.modulateModel(self.model)
         })
-          .then(function (response) {
-            console.log(response.data)
-            //window.location.href = "admin"
+        .then(function (response) {
+            if (response.status === 204) {
+              window.location.href = "/"
+            }
+            else {
+              alert(response.data.description)
+            }
           })
           .catch(function (error) {
             console.log(error)
@@ -291,9 +347,11 @@ export default {
           })
       }
     },
+
     loadGeometry() {
       this.updateModel({"fullKey": "origin.northLatitude"})
     },
+
     updateGeometry(input) {
       if (input.length === 4) {
         this.form.bounds = input
@@ -304,8 +362,9 @@ export default {
         this.model.origin["westLongitude"] = input[4]
       }
     },
+
     updateModel($event) {
-      this.form.modified = true
+      if ($event.fullKey !== "origin.northLatitude") this.form.modified = true
 
       // Pre-fill form with automatic values.
       if (!this.form.initialized) {
@@ -441,6 +500,7 @@ export default {
       }
 
     },
+
     modulateModel(input) {
       var today = new Date()
       var output = {}
@@ -468,7 +528,6 @@ export default {
       else {
         output.timestamp["interval"] = [input.origin.dateStarted.split(" ")[0], input.origin.dateStopped.split(" ")[0]]
       }
-      output.time["resolution"] = `P${input.settings.retention.toUpperCase()}`
 
       // "type"
       output["type"] = "Feature"
@@ -476,13 +535,13 @@ export default {
       // "geometry"
       output["geometry"] = {}
       output["geometry"]["type"] = "Polygon"
-      output["geometry"]["coordinates"] = [
+      output["geometry"]["coordinates"] = [[
         [input.origin.westLongitude, input.origin.southLatitude],
         [input.origin.westLongitude, input.origin.northLatitude],
         [input.origin.eastLongitude, input.origin.northLatitude],
         [input.origin.eastLongitude, input.origin.southLatitude],
         [input.origin.westLongitude, input.origin.southLatitude]
-      ]
+      ]]
 
       // "properties"
       output["properties"] = input.properties
@@ -544,6 +603,7 @@ export default {
 
       return output
     },
+
     modulateContact(input) {
       var output = JSON.parse(JSON.stringify(input))
 
@@ -582,7 +642,8 @@ export default {
       output.contactInfo["contactInstructions"] = JSON.parse(JSON.stringify(output.contactInstructions))
       delete output.contactInstructions
 
-      if (input.url != null) {
+      if ((input.url != null) && (input.url != "")) {
+        console.log(input.url)
         output.contactInfo["url"] = {}
         output.contactInfo.url = JSON.parse(JSON.stringify({ 
           "rel": "canonical",
@@ -590,11 +651,15 @@ export default {
           "href": input.url
         }))
       }
+      else {
+        delete output.url
+      }
 
       output["roles"] = []
 
       return output
     },
+
     demodulateModel(input) {
       var self = this
       var today = new Date()
@@ -605,7 +670,6 @@ export default {
         input.properties.wis2box["country"] = input.properties["wmo:topicHierarchy"].split("/")[0]
         input.properties.wis2box["centre_id"] = input.properties["wmo:topicHierarchy"].split("/")[1]
         input.properties.wis2box["retention"] = "30d"
-        if ("resolution" in input.time) input.properties.wis2box["retention"] = input.time.resolution.toLowerCase().replace("p", "")
       }
 
       output["properties"] = {}
@@ -631,10 +695,19 @@ export default {
         output.origin["dateStarted"] = today.toISOString().split('T')[0]
         output.origin["dateStopped"] = null
       }
-      output.origin["northLatitude"] = input.geometry.coordinates[0][1][1]
-      output.origin["eastLongitude"] = input.geometry.coordinates[0][2][0]
-      output.origin["southLatitude"] = input.geometry.coordinates[0][0][1]
-      output.origin["westLongitude"] = input.geometry.coordinates[0][0][0]
+
+      try {
+        output.origin["northLatitude"] = input.geometry.coordinates[0][0][1][1]
+        output.origin["eastLongitude"] = input.geometry.coordinates[0][0][2][0]
+        output.origin["southLatitude"] = input.geometry.coordinates[0][0][0][1]
+        output.origin["westLongitude"] = input.geometry.coordinates[0][0][0][0]
+      }
+      catch {
+        output.origin["northLatitude"] = input.geometry.coordinates[0][1][1]
+        output.origin["eastLongitude"] = input.geometry.coordinates[0][2][0]
+        output.origin["southLatitude"] = input.geometry.coordinates[0][0][1]
+        output.origin["westLongitude"] = input.geometry.coordinates[0][0][0]
+      }
 
       input.properties.providers.forEach(function (provider) {
         var is_poc = false
@@ -654,7 +727,7 @@ export default {
       output["settings"] = {}
       output.settings["identifier"] = input.id
       output.settings["topicHierarchy"] = input.properties["wmo:topicHierarchy"].replace("origin/a/wis2/", "")
-      output.settings["retention"] = input.properties.wis2box.retention
+      output.settings["retention"] = input.properties.wis2box.retention.toLowerCase().replace("p", "")
 
       output.settings["wmo:dataPolicy"] = "core"
       if ("wmo:dataPolicy" in input.properties) output.settings["wmo:dataPolicy"] = input.properties["wmo:dataPolicy"]
@@ -669,19 +742,20 @@ export default {
       return JSON.parse(JSON.stringify(output))
 
     },
+    
     demodulateContact(input) {
       var output = {}
     
-      output["individual"] = ""
+      output["individual"] = null
       if ("individual" in input) output["individual"] = input.individual
       
-      output["positionName"] = ""
+      output["positionName"] = null
       if ("positionName" in input) output["positionName"] = input.positionName
 
-      output["organizationName"] = ""
+      output["organizationName"] = null
       if ("name" in input) output["organizationName"] = input.name
 
-      output["url"] = ""
+      output["url"] = null
       if ("url" in input) output["url"] = input.url
 
       output["phone"] = input.contactInfo.phone.office
@@ -696,6 +770,7 @@ export default {
 
       return JSON.parse(JSON.stringify(output))
     },
+
     prepareSchema(title, node) {
       if (typeof node !== "object") {
         return node
@@ -715,7 +790,7 @@ export default {
       node.title = clean(node.title) | clean(title)
 
       return node
-    },
+    }
   },
 }
 </script>
