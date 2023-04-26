@@ -8,20 +8,34 @@
             "description": "Basic Dataset Information",
             "properties": {
                 "title": {
+                    "title": "Title",
                     "type": "string",
-                    "description": "Name of data."
+                    "description": "Name of data.",
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "description": {
+                    "title": "Description",
                     "type": "string",
-                    "description": "Brief description of data."
+                    "description": "Brief description of data.",
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "language": {
+                    "title": "Language",
                     "type": "string",
                     "description": "Lower case representation of language in 2-letter code.",
                     "pattern": "^[a-z]{2}$",
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid 2-letter code."
+                            "pattern":  "Invalid 2-letter code.",
+                            "required":  "Required."
                         }
                     }
                 },
@@ -42,38 +56,49 @@
             "description": "Data Origin Information",
             "properties": {
                 "centre_id": {
+                    "title": "Centre ID",
                     "type": "string",
                     "description": "Agency acronym (in lower case), as specified by member.",
                     "pattern": "^[a-z_-]{2,}$",
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid agency name."
+                            "pattern":  "Invalid agency name.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "dateStarted": {
+                    "title": "Date Started",
                     "type": "string",
+                    "format": "date",
                     "description": "Date on which the data began to be collected.",
                     "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(\\s[0-9]{2}:[0-9]{2}:[0-9]{2})?$",
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid date format."
+                            "pattern":  "Invalid date format.",
+                            "required":  "Required."
                         }
-                    }
+                    },
+                    "x-class": "pl-2"
                 },
                 "dateStopped": {
+                    "title": "Date Stopped",
                     "type": "string",
+                    "format": "date",
                     "description": "Date on which the data stopped begin collected. (Leave blank if ongoing. Duplicate 'dateStarted' to indicate data from a single instance.",
                     "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(\\s[0-9]{2}:[0-9]{2}:[0-9]{2})?$",
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid date format."
+                            "pattern":  "Invalid date format.",
+                            "required":  "Required."
                         }
-                    }
+                    },
+                    "x-class": "pl-2"
                 },
                 "northLatitude": {
+                    "title": "North Latitude",
                     "type": "number",
                     "description": "Northmost latitude of data region.",
                     "minimum": -90,
@@ -82,11 +107,13 @@
                     "x-options":{
                         "messages":  {
                             "minimum":  "Invalid latitude.",
-                            "maximum":  "Invalid latitude."
+                            "maximum":  "Invalid latitude.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "eastLongitude": {
+                    "title": "East Longitude",
                     "type": "number",
                     "description": "Eastmost longitude of data region.",
                     "minimum": -180,
@@ -95,11 +122,13 @@
                     "x-options":{
                         "messages":  {
                             "minimum":  "Invalid longitude.",
-                            "maximum":  "Invalid longitude."
+                            "maximum":  "Invalid longitude.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "southLatitude": {
+                    "title": "South Latitude",
                     "type": "number",
                     "description": "Southmost latitude of data region.",
                     "minimum": -90,
@@ -108,11 +137,13 @@
                     "x-options":{
                         "messages":  {
                             "minimum":  "Invalid latitude.",
-                            "maximum":  "Invalid latitude."
+                            "maximum":  "Invalid latitude.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "westLongitude": {
+                    "title": "West Longitude",
                     "type": "number",
                     "description": "Westmost longitude of data region.",
                     "minimum": -180,
@@ -121,7 +152,8 @@
                     "x-options":{
                         "messages":  {
                             "minimum":  "Invalid longitude.",
-                            "maximum":  "Invalid longitude."
+                            "maximum":  "Invalid longitude.",
+                            "required":  "Required."
                         }
                     }
                 }
@@ -141,20 +173,29 @@
             "description": "Point of Contact Information",
             "properties": {
                 "individual": {
+                    "title": "Individual",
                     "type": "string",
                     "description": "Full name.",
                     "x-cols": 6
                 },
                 "positionName": {
+                    "title": "Position",
                     "type": "string",
                     "description": "Position held.",
                     "x-cols": 6
                 },
-                "organizationName": {
+                "name": {
+                    "title": "Organization",
                     "type": "string",
-                    "description": "Organization name."
+                    "description": "Organization name.",
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "url": {
+                    "title": "URL",
                     "type": "string",
                     "description": "Organization website (including 'http://' or 'https://').",
                     "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
@@ -165,6 +206,7 @@
                     }
                 },
                 "phone": {
+                    "title": "Phone",
                     "type": "string",
                     "description": "Full international phone number, starting with '+'.",
                     "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
@@ -172,52 +214,72 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid phone number."
+                            "pattern":  "Invalid phone number.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "email": {
+                    "title": "Email",
                     "type": "string",
                     "description": "Contact email address.",
                     "pattern": "^[a-z0-9\\._-]+@[a-z0-9-]+\\.[a-z0-9\\.-]+$",
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid email."
+                            "pattern":  "Invalid email.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "deliveryPoint": {
+                    "title": "Address",
                     "type": "string",
                     "description": "Street address."
                 },
                 "city": {
+                    "title": "City",
                     "type": "string",
                     "description": "Mailing city.",
-                    "x-cols": 6
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "administrativeArea": {
+                    "title": "State",
                     "type": "string",
                     "description": "Mailing state or region.",
-                    "x-cols": 6
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "postalCode": {
+                    "title": "Postal Code",
                     "type": "string",
                     "description": "Mailing postal code.",
                     "x-cols": 6
                 },
                 "country": {
+                    "title": "Country",
                     "type": "string",
                     "description": "Upper case representation of ISO3166 3-letter code.",
                     "pattern": "^[A-Z]{3}$",
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid 3-letter code."
+                            "pattern":  "Invalid 3-letter code.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "hoursOfService": {
+                    "title": "Hours of Service",
                     "type": "string",
                     "description": "Normal weekday contact hours. (In 24hr format with timezone code.)",
                     "pattern": "^[0-9]{4}h\\s-\\s[0-9]{4}h\\s[A-Z0-9]{3}$",
@@ -225,11 +287,13 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid time range."
+                            "pattern":  "Invalid time range.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "contactInstructions": {
+                    "title": "Contact Method",
                     "type": "string",
                     "description": "Preffered contact method.",
                     "x-cols": 6,
@@ -241,7 +305,7 @@
                 }
             },
             "required": [
-                "organizationName",
+                "name",
                 "phone",
                 "email",
                 "city",
@@ -256,24 +320,34 @@
             "description": "Distributor Information",
             "properties": {
                 "duplicateFromContact": {
+                    "title": "Same as Contact Info?",
                     "type": "boolean",
                     "description": "Use point of contact information as distributor information too."
                 },
                 "individual": {
+                    "title": "Individual",
                     "type": "string",
                     "description": "Full name.",
                     "x-cols": 6
                 },
                 "positionName": {
+                    "title": "Position",
                     "type": "string",
                     "description": "Position held.",
                     "x-cols": 6
                 },
-                "organizationName": {
+                "name": {
+                    "title": "Organization",
                     "type": "string",
-                    "description": "Organization name."
+                    "description": "Organization name.",
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "url": {
+                    "title": "URL",
                     "type": "string",
                     "description": "Organization website (including 'http://' or 'https://').",
                     "pattern": "^https?:\\/\\/[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$",
@@ -284,6 +358,7 @@
                     }
                 },
                 "phone": {
+                    "title": "Phone",
                     "type": "string",
                     "description": "Full international phone number, starting with '+'.",
                     "pattern": "^\\+[0-9]+[0-9\\s\\.()-]{10,}$",
@@ -291,52 +366,72 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid phone number."
+                            "pattern":  "Invalid phone number.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "email": {
+                    "title": "Email",
                     "type": "string",
                     "description": "Contact email address.",
                     "pattern": "^[a-z0-9\\._-]+@[a-z0-9-]+\\.[a-z0-9\\.-]+$",
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid email."
+                            "pattern":  "Invalid email.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "deliveryPoint": {
+                    "title": "Address",
                     "type": "string",
                     "description": "Street address."
                 },
                 "city": {
+                    "title": "City",
                     "type": "string",
                     "description": "Mailing city.",
-                    "x-cols": 6
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "administrativeArea": {
+                    "title": "State",
                     "type": "string",
                     "description": "Mailing state or region.",
-                    "x-cols": 6
+                    "x-cols": 6,
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "postalCode": {
+                    "title": "Postal Code",
                     "type": "string",
                     "description": "Mailing postal code.",
                     "x-cols": 6
                 },
                 "country": {
+                    "title": "Country",
                     "type": "string",
                     "description": "Upper case representation of ISO3166 3-letter code.",
                     "pattern": "^[A-Z]{3}$",
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid 3-letter code."
+                            "pattern":  "Invalid 3-letter code.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "hoursOfService": {
+                    "title": "Hours of Service",
                     "type": "string",
                     "description": "Normal weekday contact hours. (In 24hr format with timezone code.)",
                     "pattern": "^[0-9]{4}h\\s-\\s[0-9]{4}h\\s[A-Z0-9]{3}$",
@@ -344,11 +439,13 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid time range."
+                            "pattern":  "Invalid time range.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "contactInstructions": {
+                    "title": "Contact Method",
                     "type": "string",
                     "description": "Preffered contact method.",
                     "x-cols": 6,
@@ -360,7 +457,7 @@
                 }
             },
             "required": [
-                "organizationName",
+                "name",
                 "phone",
                 "email",
                 "city",
@@ -375,36 +472,47 @@
             "description": "Dataset Publication Settings",
             "properties": {
                 "identifier": {
+                    "title": "Identifier",
                     "type": "string",
                     "description": "Unique identifier for this data. (Must begin with 'urn:x-wmo:md:'.",
                     "pattern": "^urn:x-wmo:md:[a-z]{3}:[a-z0-9_-]+:[a-z0-9_-]+[a-z0-9:-]*$",
                     "default": "urn:x-wmo:md:",
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid unique identifier."
+                            "pattern":  "Invalid unique identifier.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "topicHierarchy": {
+                    "title": "Topic Hierarchy",
                     "type": "string",
                     "pattern": "^[a-z]{3}/[_a-z-]+/(data|metadata|reports)/(core|recommended)/[\\w]+/[\\w-]+[/\\w]*$",
-                    "description": "Unique hierarchy for this data. (Usually similar to the identifier.",
+                    "description": "Unique hierarchy for this data. (Usually similar to the identifier.)",
                     "x-options": {
                         "messages":  {
-                            "pattern":  "Invalid topic hierarchy."
+                            "pattern":  "Invalid topic hierarchy.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "wmo:dataPolicy": {
+                    "title": "WMO Data Policy",
                     "type": "string",
                     "description": "Priority of data within WMO.",
                     "x-cols": 6,
                     "enum": [
                         "core",
                         "recommended"
-                    ]
+                    ],
+                    "x-options":{
+                        "messages":  {
+                            "required":  "Required."
+                        }
+                    }
                 },
                 "retention": {
+                    "title": "Retention Length",
                     "type": "string",
                     "description": "Minimum length of time data should be retained in WIS2.",
                     "default": "30d",
@@ -421,11 +529,13 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "pattern":  "Invalid retention option."
+                            "pattern":  "Invalid retention option.",
+                            "required":  "Required."
                         }
                     }
                 },
                 "keywords": {
+                    "title": "Search Keywords",
                     "type": "array",
                     "description": "Search keywords for data, at least 3. (ex: https://github.com/wmo-im/wcmp-codelists/blob/main/codelists/WMO_CategoryCode.csv)",
                     "minItems": 3,

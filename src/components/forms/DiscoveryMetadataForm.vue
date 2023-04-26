@@ -16,6 +16,7 @@
             :items="items"
             dense
             @change="loadMetadata()"
+            :disabled="specified"
           ></v-select>
         </div>
 
@@ -121,6 +122,7 @@ export default {
       working: false,
       validated: false,
       filled: false,
+      specified: false,
       message: "Select a discovery metadata file.",
       items: [],
       identifier: "",
@@ -132,6 +134,15 @@ export default {
         // icons: { calendar: null, clock: null },
         editMode: "inline",
         rootDisplay: "stepper",
+        autoFocus: true,
+        tooltipProps: { 
+          left: true, 
+          openOnHover: true, 
+          openOnClick: true
+        },
+        formats: {
+          date: function(e){return new Date(e).toISOString().split("T")[0]}
+        }
       },
       form: {
         bounds: [0],
@@ -160,6 +171,7 @@ export default {
             self.items.push(item.id)
           })
           self.items.push("Create New...")
+          self.specified = false
         })
         .catch(function (error) {
           console.log(error)
@@ -170,6 +182,7 @@ export default {
       // Load specific file, if specified.
       if (self.items.includes(identifier)) {
         self.identifier = identifier
+        self.specified = true
         await self.loadMetadata()
       }
     },
@@ -426,13 +439,13 @@ export default {
       }
 
       // Null out stop date if empty.
-      if ($event.fullKey === "origin.dateStoped") {
+      if ($event.fullKey === "origin.dateStopped") {
         if (
-          ( !("dateStoped" in this.model.origin)) ||
-          (this.model.origin.dateStoped === null) ||
-          (this.model.origin.dateStoped === "") 
+          ( !("dateStopped" in this.model.origin)) ||
+          (this.model.origin.dateStopped === null) ||
+          (this.model.origin.dateStopped === "") 
         ) {
-          this.model.origin["dateStoped"] = null
+          this.model.origin["dateStopped"] = null
         }
       }
 
@@ -609,9 +622,6 @@ export default {
 
       output["contactInfo"] = {}
 
-      output["name"] = JSON.parse(JSON.stringify(output.organizationName))
-      delete output.organizationName
-
       output.contactInfo["phone"] = {}
       output.contactInfo.phone = JSON.parse(JSON.stringify({ "office": output.phone }))
       delete output.phone
@@ -752,8 +762,8 @@ export default {
       output["positionName"] = null
       if ("positionName" in input) output["positionName"] = input.positionName
 
-      output["organizationName"] = null
-      if ("name" in input) output["organizationName"] = input.name
+      output["name"] = null
+      if ("name" in input) output["name"] = input.name
 
       output["url"] = null
       if ("url" in input) output["url"] = input.url
@@ -764,7 +774,7 @@ export default {
       output["city"] = input.contactInfo.address.office.city
       output["administrativeArea"] = input.contactInfo.address.office.administrativeArea
       output["postalCode"] = input.contactInfo.address.office.postalCode
-      output["country"] = input.contactInfo.address.office.country
+      output["country"] = input.contactInfo.address.office.country.slice(0, 3).toUpperCase()
       output["hoursOfService"] = input.contactInfo.hoursOfService
       output["contactInstructions"] = input.contactInfo.contactInstructions
 
