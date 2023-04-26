@@ -107,6 +107,7 @@ import { clean } from "@/scripts/helpers.js"
 import form_schema from "@/models/DiscoveryMetadataForm.json"
 
 let oapi = window.VUE_APP_OAPI
+let mqtt = window.MQTT_HOST
 
 export default {
   name: "DiscoveryMetadataForm",
@@ -602,7 +603,7 @@ export default {
       })
       output.links.push({
         "rel": "data",
-        "href": "mqtt://everyone:everyone@mosquitto:1883",
+        "href": `mqtt://everyone:everyone@${mqtt}:1883`,
         "type": "MQTT",
         "title": input.settings.topicHierarchy.replace(/\//g, "."),
         "channel": `origin/a/wis2/${input.settings.topicHierarchy}`
