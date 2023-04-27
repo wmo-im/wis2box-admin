@@ -28,7 +28,7 @@
 
 <script>
 import { documentation } from "../../../package";
-let baseURL = window.VUE_ADMIN_URL;
+// let baseURL = window.VUE_ADMIN_URL;
 
 import { defineComponent } from "vue";
 
@@ -53,11 +53,11 @@ export default defineComponent({
           target: "/stations",
           href: undefined,
         },
-        {
-          text: "monitoring",
-          target: undefined,
-          href: `${baseURL}monitoring`,
-        },
+        // {
+        //   text: "monitoring",
+        //   target: undefined,
+        //   href: `${baseURL}monitoring`,
+        // },
         {
           text: "documentation",
           target: undefined,
