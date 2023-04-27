@@ -13,7 +13,7 @@
                     "description": "Name of data.",
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -23,7 +23,7 @@
                     "description": "Brief description of data.",
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -35,7 +35,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid 2-letter code.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -63,7 +63,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid agency name.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -77,7 +77,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid date format.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     },
                     "x-class": "pl-2"
@@ -92,7 +92,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid date format.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     },
                     "x-class": "pl-2"
@@ -108,7 +108,7 @@
                         "messages":  {
                             "minimum":  "Invalid latitude.",
                             "maximum":  "Invalid latitude.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -123,7 +123,7 @@
                         "messages":  {
                             "minimum":  "Invalid longitude.",
                             "maximum":  "Invalid longitude.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -138,7 +138,7 @@
                         "messages":  {
                             "minimum":  "Invalid latitude.",
                             "maximum":  "Invalid latitude.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -153,7 +153,7 @@
                         "messages":  {
                             "minimum":  "Invalid longitude.",
                             "maximum":  "Invalid longitude.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 }
@@ -190,7 +190,7 @@
                     "description": "Organization name.",
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -215,7 +215,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid phone number.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -228,7 +228,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid email.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -244,7 +244,7 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -255,7 +255,7 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -274,7 +274,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid 3-letter code.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -288,7 +288,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid time range.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -342,7 +342,7 @@
                     "description": "Organization name.",
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -367,7 +367,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid phone number.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -380,7 +380,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid email.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -396,7 +396,7 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -407,7 +407,7 @@
                     "x-cols": 6,
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -426,7 +426,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid 3-letter code.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -440,7 +440,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid time range.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -480,7 +480,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid unique identifier.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -492,7 +492,7 @@
                     "x-options": {
                         "messages":  {
                             "pattern":  "Invalid topic hierarchy.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -507,7 +507,7 @@
                     ],
                     "x-options":{
                         "messages":  {
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
@@ -530,7 +530,7 @@
                     "x-options":{
                         "messages":  {
                             "pattern":  "Invalid retention option.",
-                            "required":  "Required."
+                            "required":  "Required"
                         }
                     }
                 },
