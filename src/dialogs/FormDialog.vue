@@ -90,20 +90,19 @@
           </v-row>
         </v-container>
       </v-form>
-      <div class="d-flex flex-column">
-        <v-btn
-            color="success"
-            class="mt-4"
-            block
-            @click="this.validate"
-        >
-          Validate
-        </v-btn>
-      </div>
+<!--      <div class="d-flex flex-column">-->
+<!--        <v-btn-->
+<!--            color="success"-->
+<!--            class="mt-4"-->
+<!--            block-->
+<!--            @click="this.validate"-->
+<!--        >-->
+<!--          Validate-->
+<!--        </v-btn>-->
+<!--      </div>-->
       <v-item style="height: 600px; width: 100%">
         <geometry-editor @geomUpdate="handleGeometryUpdate" v-bind:input-feature="stationData"
         ></geometry-editor>
-        <!--                         v-on:updateGeometry="handleGeometryUpdate($event)"></geometry-editor>-->
 
       </v-item>
       <v-spacer/>
