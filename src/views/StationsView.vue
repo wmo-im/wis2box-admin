@@ -222,7 +222,6 @@ export default {
         headers: {'Accept': 'application/geo+json'},
         params: {
           skipGeometry: true,
-          properties: 'id',
         }
       })
           .then(function (response) {
