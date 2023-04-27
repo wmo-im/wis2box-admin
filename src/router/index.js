@@ -27,7 +27,7 @@ const routes = [
 
 const router = new VueRouter({
   mode: "history",
-  base: window.VUE_ADMIN_URL.replace(window.VUE_APP_URL, ''),
+  base: window.VUE_ADMIN_LOC,
   routes
 });
 
