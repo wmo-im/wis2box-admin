@@ -124,7 +124,7 @@ export default {
       validated: false,
       filled: false,
       specified: false,
-      message: "Select existing discovery metadata file, or Create New",
+      message: "Select existing discovery metadata file or create new.",
       items: [],
       identifier: "",
       defaults: {},
@@ -186,6 +186,11 @@ export default {
         self.specified = true
         await self.loadMetadata()
       }
+      else if (identifier === "new") {
+        self.identifier = "Create New..."
+        self.specified = true
+        await self.loadMetadata()
+      }
     },
 
     async loadMetadata() {
@@ -241,13 +246,16 @@ export default {
         self.loaded = true
       }
       self.working = false
-      self.message = "Select a discovery metadata file."
+      self.message = "Select existing discovery metadata file or create new."
     },
 
     resetMetadata() {
-      this.model = this.defaults
-      this.form.initialized = false
+      try {
+        this.model = this.defaults
+      }
+      catch { null }
       this.loadGeometry()
+      this.form.initialized = false
     },
 
     async validateMetadata() {
@@ -473,7 +481,9 @@ export default {
             ]
           }
         }
-        catch { false }
+        catch { 
+          this.form.bounds = [0]
+        }
       }
 
       // Auto-fill distributor if copy is selected.

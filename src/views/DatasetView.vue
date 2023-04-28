@@ -1,23 +1,6 @@
 <template id="dataset-view">
   <div class="dataset-view">
     <v-card flat class="pa-2">
-      <v-row>
-        <v-col>
-          <v-card-actions>
-            <v-btn
-                variant="mdi-plus"
-                color="light-blue"
-                @click="$router.push('/new')"
-            >
-              <v-icon>
-                mdi-plus
-              </v-icon>
-              Add Discovery Metadata
-            </v-btn>
-
-          </v-card-actions>
-        </v-col>
-      </v-row>
       <v-row v-for="(item, i) in datasets" :key="i" fill-height>
         <v-col sm="12" md="3">
           <v-hover>
@@ -89,6 +72,22 @@
           </v-col>
         </v-col>
         <v-divider v-if="i + 1 < datasets.length" />
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-card-actions>
+            <v-btn
+                variant="mdi-plus"
+                color="light-blue"
+                @click="$router.push('/new')"
+            >
+              <v-icon>
+                mdi-plus
+              </v-icon>
+              Add Discovery Metadata
+            </v-btn>
+          </v-card-actions>
+        </v-col>
       </v-row>
     </v-card>
   </div>
