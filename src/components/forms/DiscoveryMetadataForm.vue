@@ -124,7 +124,7 @@ export default {
       validated: false,
       filled: false,
       specified: false,
-      message: "Select a discovery metadata file.",
+      message: "Select existing discovery metadata file, or Create New",
       items: [],
       identifier: "",
       defaults: {},
