@@ -1,9 +1,9 @@
 <template>
   <v-app id="v-app">
-    <app-header class="px-3" />
+    <app-header />
 
     <v-main>
-      <v-responsive class="pa-2">
+      <v-responsive class="pa-4">
         <v-row justify="center">
           <v-card flat width="90%" max-width="1130">
             <app-nav />

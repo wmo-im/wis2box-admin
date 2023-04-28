@@ -1,19 +1,19 @@
 <template id="edit-view">
   <div class="edit-view">
-    <v-card class="mx-auto" width="90%">
-      <mcf-form :topic="topic" />
+    <v-card>
+      <discovery-metadata-form class="mb-8" :topic="topic" />
     </v-card>
   </div>
 </template>
 
 <script>
-import McfForm from "@/components/forms/McfForm.vue";
+import DiscoveryMetadataForm from "@/components/forms/DiscoveryMetadataForm.vue";
 
 export default {
   name: "EditView",
   template: "#edit-view",
   props: ["topic"],
-  components: { McfForm },
+  components: { DiscoveryMetadataForm },
   data: function () {
     return {
       tab: null,

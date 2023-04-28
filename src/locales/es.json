@@ -3,9 +3,9 @@
   "code": "es",
   "navigation": {
     "home": "Página Principal",
-    "datasets": "Conjunto de datos",
+    "datasets": "Conjunto de Datos",
     "admin": "Administración",
-    "services": "Servicios de datos",
+    "services": "Servicios de Datos",
     "documentation": "Documentación",
     "monitoring": "Vigilancia",
     "stations": "Estaciónes"
@@ -16,15 +16,14 @@
     "save": "Guardar"
   },
   "footer": {
-    "powered_by": "Desarrollada por"
+    "powered_by": "desarrollada por"
   },
   "datasets": {
     "topic": "Tema",
     "messages": "Mensajes del WIS 2.0",
     "oafeat": "Observaciones",
     "oarec": "OGC API - Record",
-    "dm": "Metadatos de descubrimiento",
-    "mcf": "Archivo de control de metadatos",
+    "dm": "Metadatos de Descubrimiento",
     "edit": "Editar",
     "mqp": "PubSub"
   }

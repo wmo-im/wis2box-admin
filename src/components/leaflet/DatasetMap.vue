@@ -51,7 +51,6 @@ export default {
       this.loading = true;
       this.$nextTick(() => {
         this.map = this.$refs[this.dataset.id]["mapObject"];
-        console.log(L.geoJSON(this.dataset).getBounds());
         this.map.fitBounds(L.geoJSON(this.dataset).getBounds());
         this.map.zoomOut(0.25);
         this.map.setMinZoom(this.map.getZoom());

@@ -5,7 +5,7 @@
     "home": "Home",
     "datasets": "Datasets",
     "admin": "Admin",
-    "services": "Data services",
+    "services": "Data Services",
     "documentation": "Documentation",
     "monitoring": "Monitoring",
     "stations": "Stations"
@@ -16,15 +16,14 @@
     "save": "Save"
   },
   "footer": {
-    "powered_by": "Powered by"
+    "powered_by": "powered by"
   },
   "datasets": {
     "topic": "Topic",
-    "messages": "WIS 2.0 messages",
+    "messages": "WIS 2.0 Messages",
     "oafeat": "Observations",
     "oarec": "OGC API - Record",
-    "dm": "Discovery metadata",
-    "mcf": "Metadata control file",
+    "dm": "Discovery Metadata",
     "edit": "Edit",
     "mqp": "PubSub"
   }

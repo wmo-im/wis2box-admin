@@ -1,9 +1,9 @@
 <template id="app-footer">
-  <div class="app-footer">
-    <v-footer flat height="110">
+  <div class="app-footer pa-0">
+    <v-footer flat height="60" class="pa-0">
       <v-row justify="center">
-        <v-col cols="12">
-          <v-img :src="foot" :lazy-src="foot" />
+        <v-col cols="12" class="pa-0">
+          <v-img :src="foot" :lazy-src="foot" height="12"/>
         </v-col>
         <v-col class="text-center" cols="12">
           <p>
