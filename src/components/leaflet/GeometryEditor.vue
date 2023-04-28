@@ -4,16 +4,24 @@
       <v-container>
         <v-form>
           <v-row>
-            <v-text-field :rules="this.rules" label="Lat" variant="outlined" v-model="markerXYPosition.lat"
-                          prepend-icon="mdi:map-marker-plus" type="number"></v-text-field>
-            <v-text-field :rules="this.rules" label="Lon" variant="outlined" v-model="markerXYPosition.lng"
-                          prepend-icon="mdi:map-marker-plus-outline" type="number"></v-text-field>
-            <v-text-field :rules="this.rules" label="Elevation" variant="outlined" v-model="elevation"
-                          prepend-icon="mdi:elevation-rise" type="number"></v-text-field>
+            <v-col>
+              <v-text-field :rules="this.rules" label="Lat" variant="outlined" v-model.number="markerXYPosition.lat"
+                            type="number"></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field :rules="this.rules" label="Lon" variant="outlined" v-model.number="markerXYPosition.lng"
+                            type="number"></v-text-field>
+            </v-col>
           </v-row>
           <v-row>
-            <v-btn color="blue" @click="refreshGeometry()" block>Update Map</v-btn>
+            <v-col>
+              <v-text-field :rules="this.rules" label="Elevation" variant="outlined" v-model.number="elevation"
+                            type="number"></v-text-field>
+            </v-col>
           </v-row>
+          <!--          <v-row>-->
+          <!--            <v-btn color="blue" @click="refreshGeometry()" block>Update Map</v-btn>-->
+          <!--          </v-row>-->
         </v-form>
       </v-container>
 
@@ -23,20 +31,6 @@
             :collapsed="true"
             :sort-layers="true"
         />
-<!--        <l-control position='topright'>-->
-<!--          <v-btn-->
-<!--              fab-->
-<!--              dark-->
-<!--              color="blue"-->
-<!--              small-->
-<!--          >-->
-<!--            <v-icon dark>-->
-<!--              mdi-plus-->
-<!--            </v-icon>-->
-<!--          </v-btn>-->
-
-<!--        </l-control>-->
-        <!--    <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>-->
         <l-tile-layer
             v-for="tileProvider in tileProviders"
             :key="tileProvider.name"
@@ -47,11 +41,49 @@
             layer-type="base"
         />
 
-        <l-marker v-if="markerXYPosition.lat!==null && markerXYPosition.lng !== null" :autoPan="true" :autofocus="true" ref="mapMarker" :lat-lng.sync="markerXYPosition" :draggable="true"></l-marker>
-        <!--    <l-marker :lat-lng="markerLatLng"></l-marker>-->
+        <l-marker v-if="markerXYPosition.lat!==null && markerXYPosition.lng !== null" :autoPan="false"
+                  :autofocus="false" ref="mapMarker" :lat-lng.sync="markerXYPosition" :draggable="true"></l-marker>
+        <l-control position="bottomleft">
+          <v-btn
+              class="mx-2"
+              fab
+              dark
+              small
+              color="primary"
+              @click="snackbar = !snackbar"
+          >
+            <v-icon dark>
+              mdi-information
+            </v-icon>
+          </v-btn>
+        </l-control>
+        <v-snackbar centered light
+            v-model="snackbar"
+            location="center"
+        >
+          <h3>
+            Tips:
+          </h3>
+          <ul>
+            <li>Click and drag to move map</li>
+            <li>Zoom with mouse wheel, or buttons</li>
+            <li>Drag the icon to reposition, or edit lat/lon</li>
+            <li>Use the basemap widget to change the map view</li>
+          </ul>
+          <template>
+            <v-btn
+                text
+                @click="snackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
       </l-map>
     </v-img>
+
   </v-lazy>
+
 
 </template>
 <style>
@@ -59,8 +91,9 @@
 </style>
 
 <script>
-import {LMap, LTileLayer, LControlLayers, LMarker} from 'vue2-leaflet';
+import {LMap, LTileLayer, LControlLayers, LMarker, LControl} from 'vue2-leaflet';
 import {LatLng} from "leaflet";
+
 export default {
   name: "GeometryEditor",
   components: {
@@ -68,7 +101,7 @@ export default {
     LTileLayer,
     LMarker,
     LControlLayers,
-    // LControl
+    LControl
   },
   props: {
     inputFeature: {},
@@ -81,34 +114,47 @@ export default {
       ogInputData: {},
       center: this.parseInputGeom(this.inputFeature),
       markerXYPosition: this.parseInputGeom(this.inputFeature),
-      elevation: this.inputFeature.coordinates? this.inputFeature.coordinates[2]: null,
+      elevation: this.inputFeature.coordinates ? this.inputFeature.coordinates[2] : 0,
       rules: [
         value => {
-          if (value | String(value) ==='0') return true
+          if (value | String(parseFloat(value)) === '0') return true
           return 'Required!'
         },
       ],
+      snackbar: false,
     };
   },
   watch: {
     markerXYPosition: {
       handler(newVal) {
-        this.$emit('geomUpdate', [newVal.lng, newVal.lat, parseFloat(this.elevation)])
+        console.log(newVal)
+        this.$emit('geomUpdate', [parseFloat(newVal.lng), parseFloat(newVal.lat), parseFloat(this.elevation)])
+        // when dragging the marker - the timeout helps reduce the jittering
+        setTimeout(() => {
+          this.$refs.leafMap.mapObject.invalidateSize()
+          this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
+        }, 500)
       },
       deep: true
     },
   },
   methods: {
+    onInfoClick() {
+      this.snackbar = false;
+    },
 
     parseInputGeom(inputGeom) {
-      if (Object.keys(inputGeom ).length > 0) {
+      if (Object.keys(inputGeom).length > 0) {
         console.log(inputGeom)
         const markerLatLng = new LatLng(inputGeom.coordinates[1], inputGeom.coordinates[0])
+        this.$emit('geomUpdate', [markerLatLng.lng, markerLatLng.lng, inputGeom.coordinates[2]])
+
         return markerLatLng
-      }
-      else {
+      } else {
         // console.log('error parsing input geometry')
-        return {lat: null, lng: null}
+
+        this.$emit('geomUpdate', [0, 0, 0])
+        return {lat: 0, lng: 0}
       }
     },
     refreshGeometry(someEvent) {
@@ -117,7 +163,7 @@ export default {
         const currentCenter = this.$refs.leafMap.mapObject.getCenter()
         this.markerXYPosition = currentCenter
       }
-      this.$emit('geomUpdate', [this.markerXYPosition.lng, this.markerXYPosition.lat, this.elevation])
+      this.$emit('geomUpdate', [parseFloat(this.markerXYPosition.lng), parseFloat(this.markerXYPosition.lat), parseFloat(this.elevation)])
       this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
     },
     loadBasemaps() {

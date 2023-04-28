@@ -62,8 +62,17 @@
                             :rules="rules.required"></v-text-field>
             </v-col>
             <v-col>
-              <v-text-field v-model="stationData.wmo_region" label="WMO Region"
-                            :rules="rules.required" type="number"></v-text-field>
+              <!--              <v-text-field v-model="stationData.wmo_region" label="WMO Region"-->
+              <!--                            :rules="rules.required" type="number"></v-text-field>-->
+              <v-select
+                  v-model="stationData.wmo_region"
+                  :items="this.wmoRegions"
+                  item-text='title'
+                  item-value='value'
+                  item-label="WMO Region"
+                  label="WMO Region"
+                  :rules="rules.required"
+              ></v-select>
             </v-col>
           </v-row>
           <v-row>
@@ -81,24 +90,23 @@
           </v-row>
         </v-container>
       </v-form>
-      <div class="d-flex flex-column">
-        <v-btn
-            color="success"
-            class="mt-4"
-            block
-            @click="this.validate"
-        >
-          Validate
-        </v-btn>
-      </div>
+<!--      <div class="d-flex flex-column">-->
+<!--        <v-btn-->
+<!--            color="success"-->
+<!--            class="mt-4"-->
+<!--            block-->
+<!--            @click="this.validate"-->
+<!--        >-->
+<!--          Validate-->
+<!--        </v-btn>-->
+<!--      </div>-->
       <v-item style="height: 600px; width: 100%">
         <geometry-editor @geomUpdate="handleGeometryUpdate" v-bind:input-feature="stationData"
         ></geometry-editor>
-        <!--                         v-on:updateGeometry="handleGeometryUpdate($event)"></geometry-editor>-->
 
       </v-item>
       <v-spacer/>
-      <v-card-actions>
+        <v-card-actions>
         <v-spacer/>
         <v-btn color="pink lighten-1" class="mr-1" text @click="close">
           Cancel
@@ -169,6 +177,7 @@ export default {
     formContent: {},
     stationStatus: [],
     facilityTypes: [],
+    wmoRegions:[],
     submitFunc: Function,
     formTitle: null,
     discoData: []
@@ -185,7 +194,7 @@ export default {
         required: [v => !!v || 'Required!'],
         // numeric: [x => x.match(/^\d+$/)===true || 'Must be integer!']
       },
-      featureGeometry: {}
+      featureGeometry: []
     }
   },
   watch: {
@@ -193,6 +202,7 @@ export default {
       console.log('new form content', dat)
       if (dat !== {}) {
         this.stationData = dat
+        // this.featureGeometry = this.stationData.coordinates
       }
     }
   },
@@ -224,11 +234,9 @@ export default {
       } else {
         let featureData = {...stationSchema}
         featureData.properties = {...featureData.properties, ...this.stationData}
-        featureData.id = featureData.properties.id = featureData.properties.wigos_station_identifier
+        featureData.id = featureData.properties.id = this.stationData.wigos_station_identifier
         featureData.geometry.coordinates = this.featureGeometry
-        featureData.geometry.coordinates = featureData.geometry.coordinates.map(function (c) {
-          return c === null ? 0 : Math.round(parseFloat(c))
-        })
+        featureData.properties.url = `https://oscar.wmo.int/surface/#/search/station/stationReportDetails/${featureData.id}`
         delete featureData.properties.coordinates
         // links
         featureData.links.href = `${window.VUE_APP_OAPI}/collections/discovery-metadata/items/${featureData.properties.topic}`
