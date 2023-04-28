@@ -247,6 +247,7 @@ export default {
     resetMetadata() {
       this.model = this.defaults
       this.form.initialized = false
+      this.loadGeometry()
     },
 
     async validateMetadata() {
@@ -367,6 +368,7 @@ export default {
     },
 
     updateGeometry(input) {
+      console.log('updateGeometry')
       if (input.length === 4) {
         this.form.bounds = input
         if ( !("origin" in this.model)) this.model["origin"] = {}
@@ -384,8 +386,7 @@ export default {
       if (!this.form.initialized) {
 
         var today = new Date()
-
-        this.model.origin["dateStarted"] = today.toISOString().split('T')[0]
+        // this.model.origin["dateStarted"] = today.toISOString().split('T')[0]
         this.model.origin["dateEnded"] = null
 
         this.model.poc.individual = null
