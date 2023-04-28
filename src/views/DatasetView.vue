@@ -6,10 +6,10 @@
           <v-card-actions>
             <v-btn
                 variant="mdi-plus"
-                color="blue"
+                color="light-blue"
                 @click="$router.push('/new')"
             >
-              <v-icon dark>
+              <v-icon>
                 mdi-plus
               </v-icon>
               Add Discovery Metadata
