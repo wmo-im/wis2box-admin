@@ -190,7 +190,6 @@ export default {
   },
   methods: {
     async loadStations(){
-      console.log('loadStations')
       const self = this
       await this.$http({
         method: 'get',
@@ -198,8 +197,6 @@ export default {
         // headers: {'Content-Type': 'application/json'}
       })
           .then(function (response) {
-            console.log('...loaded stations')
-            console.log(response)
             if (response.data.features) {
               self.parseStations(response.data)
             } else {
@@ -214,7 +211,6 @@ export default {
       this.discoveryMetadata = discoData.map(d => {return {title: d.id, value: d.id}})
     },
     async loadDiscovery() {
-      console.log('loadStations')
       const self = this
       await this.$http({
         method: 'get',
@@ -225,8 +221,6 @@ export default {
         }
       })
           .then(function (response) {
-            console.log('...loaded discovery metadata')
-            console.log(response)
             if (response.data.features) {
               self.parseDiscoveryMetadata(response.data.features)
             } else {
@@ -280,7 +274,6 @@ export default {
         this.formTitle = 'Edit Station'
 
         this.stationData = Object.assign({}, stn)
-        console.log('station data: ', stn)
       }
       this.dialog = true
     },
@@ -311,8 +304,7 @@ export default {
       // for update just get the og station info, and merge in the updated values/keys
       // stnInfo = {...this.stationData, ...stnInfo}
       delete stnInfo.properties.coordinates
-      stnInfo.geometry.coordinates = stnInfo.geometry.coordinates.map(c => Math.round(parseFloat(c)))
-      console.log(stnInfo)
+      stnInfo.geometry.coordinates = stnInfo.geometry.coordinates.map(c => parseFloat(c))
       await this.$http({
         method: 'put',
         url: oAPI + `/collections/stations/items/${stnInfo.id}`,
