@@ -182,9 +182,6 @@ export default {
     formTitle: null,
     discoData: []
   },
-  destroyed() {
-    console.log('destroyed')
-  },
 
   data() {
     return {
@@ -199,7 +196,6 @@ export default {
   },
   watch: {
     formContent(dat) {
-      console.log('new form content', dat)
       if (dat !== {}) {
         this.stationData = dat
         // this.featureGeometry = this.stationData.coordinates
@@ -210,8 +206,6 @@ export default {
 
   methods: {
     handleGeometryUpdate(newGeom) {
-      console.log("handleGeometryUpdate")
-      console.log(newGeom)
       this.featureGeometry = newGeom
 
     },

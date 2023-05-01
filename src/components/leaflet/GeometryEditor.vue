@@ -58,8 +58,8 @@
           </v-btn>
         </l-control>
         <v-snackbar centered light
-            v-model="snackbar"
-            location="center"
+                    v-model="snackbar"
+                    location="center"
         >
           <h3>
             Tips:
@@ -127,7 +127,6 @@ export default {
   watch: {
     markerXYPosition: {
       handler(newVal) {
-        console.log(newVal)
         this.$emit('geomUpdate', [parseFloat(newVal.lng), parseFloat(newVal.lat), parseFloat(this.elevation)])
         // when dragging the marker - the timeout helps reduce the jittering
         setTimeout(() => {
@@ -137,15 +136,16 @@ export default {
       },
       deep: true
     },
+    elevation: {
+      handler(newVal) {
+        this.$emit('geomUpdate', [this.markerXYPosition.lng, this.markerXYPosition.lat, parseFloat(newVal)])
+      },
+      deep: true
+    },
   },
   methods: {
-    onInfoClick() {
-      this.snackbar = false;
-    },
-
     parseInputGeom(inputGeom) {
       if (Object.keys(inputGeom).length > 0) {
-        console.log(inputGeom)
         const markerLatLng = new LatLng(inputGeom.coordinates[1], inputGeom.coordinates[0])
         this.$emit('geomUpdate', [markerLatLng.lng, markerLatLng.lng, inputGeom.coordinates[2]])
 
@@ -157,15 +157,15 @@ export default {
         return {lat: 0, lng: 0}
       }
     },
-    refreshGeometry(someEvent) {
-      console.log('refreshGeometry', someEvent)
-      if (this.markerXYPosition.lat === null | this.markerXYPosition.lng === null) {
-        const currentCenter = this.$refs.leafMap.mapObject.getCenter()
-        this.markerXYPosition = currentCenter
-      }
-      this.$emit('geomUpdate', [parseFloat(this.markerXYPosition.lng), parseFloat(this.markerXYPosition.lat), parseFloat(this.elevation)])
-      this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
-    },
+    // refreshGeometry(someEvent) {
+    //   console.log('refreshGeometry', someEvent)
+    //   if (this.markerXYPosition.lat === null | this.markerXYPosition.lng === null) {
+    //     const currentCenter = this.$refs.leafMap.mapObject.getCenter()
+    //     this.markerXYPosition = currentCenter
+    //   }
+    //   this.$emit('geomUpdate', [parseFloat(this.markerXYPosition.lng), parseFloat(this.markerXYPosition.lat), parseFloat(this.elevation)])
+    //   this.$refs.leafMap.mapObject.flyTo(this.markerXYPosition)
+    // },
     loadBasemaps() {
       return [
         {
