@@ -138,7 +138,7 @@ export default {
         autoFocus: true,
         tooltipProps: { 
           left: true, 
-          openOnHover: false, 
+          openOnHover: true, 
           openOnClick: true
         },
         formats: {
