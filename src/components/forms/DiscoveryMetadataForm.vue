@@ -149,7 +149,8 @@ export default {
         bounds: [0],
         initialized: true,
         modified: false,
-        manual_ids: true
+        manual_ids: true,
+        country_codes: []
       }
     }
   },
@@ -200,6 +201,21 @@ export default {
       this.message = "Working..."
       this.form.modified = false
 
+      // Fetch country ISO codes for injection.
+      await this.$http({
+        method: "get",
+        url: "https://api.worldbank.org/v2/country?format=json&per_page=500"
+      })
+        .then(function (response) {
+          response.data[1].forEach(function (item) {
+            self.form.country_codes.push(item.id)
+          })
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+
+      // Load a blank new discovery metadata file.
       if (self.identifier === "Create New...") {
         self.defaults = {}
         self.form.bounds = [0]
@@ -208,13 +224,14 @@ export default {
         self.validated = false
         self.is_new = true
       }
+
+      // Load the corresponding discovery metadata file.
       else {
         self.is_new = false
         self.validated = true
-        var url = `${oapi}/collections/discovery-metadata/items/${self.identifier}`
         await this.$http({
           method: "get",
-          url: url,
+          url: `${oapi}/collections/discovery-metadata/items/${self.identifier}`,
         })
           .then(function (response) {
             //console.log(response.data)
@@ -228,19 +245,21 @@ export default {
           })
         }
 
+      // Dereference and format schema.
       $RefParser.dereference(form_schema, (err, schema) => {
         if (err) {
           console.error(err)
-        } else {
-          this.title = schema.title
-
+        } 
+        else {
+          schema.properties.poc.properties.country.enum = this.form.country_codes
+          schema.properties.distrib.properties.country.enum = this.form.country_codes
           const mergedSchema = mergeAllOf(schema)
           const parsedSchema = this.prepareSchema("root", mergedSchema)
-
           this.schema = Object.assign({}, parsedSchema)
         }
       })
 
+      // Update UI.
       if (!self.message.includes("Error")) {
         self.model = self.defaults
         self.loaded = true
@@ -373,6 +392,42 @@ export default {
 
     loadGeometry() {
       this.updateModel({"fullKey": "origin.northLatitude"})
+      document.querySelectorAll(".v-btn--icon").forEach(function (element) {
+        element.tabIndex = -1
+      })
+      document.getElementById("settings-keywords").addEventListener("keyup", function (event) {
+        if (event.key === " ") {
+          var ev = new KeyboardEvent(
+            'keydown', 
+            {
+              altKey:false,
+              bubbles: true,
+              cancelBubble: false, 
+              cancelable: true,
+              charCode: 0,
+              code: "Enter",
+              composed: true,
+              ctrlKey: false,
+              currentTarget: null,
+              defaultPrevented: true,
+              detail: 0,
+              eventPhase: 0,
+              isComposing: false,
+              isTrusted: true,
+              key: "Enter",
+              keyCode: 13,
+              location: 0,
+              metaKey: false,
+              repeat: false,
+              returnValue: false,
+              shiftKey: false,
+              type: "keydown",
+              which: 13
+            }
+          )
+          document.getElementById("settings-keywords").dispatchEvent(ev)
+        }
+      })
     },
 
     updateGeometry(input) {
@@ -394,7 +449,7 @@ export default {
       if (!this.form.initialized) {
 
         var today = new Date()
-        // this.model.origin["dateStarted"] = today.toISOString().split('T')[0]
+        this.model.origin["dateStarted"] = today.toISOString().split('T')[0]
         this.model.origin["dateEnded"] = null
 
         this.model.poc.individual = null
@@ -433,8 +488,8 @@ export default {
 
         // Only auto-fill if all components are entered, but not manually edited.
         if (
-          ("country" in this.model.poc) &&
-          (this.model.poc.country.length > 0) &&
+          ("country" in this.model.distrib) &&
+          (this.model.distrib.country.length > 0) &&
           ("centre_id" in this.model.origin) &&
           (this.model.origin.centre_id.length > 0) &&
           ("wmo:dataPolicy" in this.model.properties) &&
@@ -442,9 +497,9 @@ export default {
         ) {
           this.validated = false
           this.model.settings.identifier = 
-            `urn:x-wmo:md:${this.model.poc.country.toLowerCase()}:${this.model.origin.centre_id.toLowerCase()}:weather-observations`
+            `urn:x-wmo:md:${this.model.distrib.country.toLowerCase()}:${this.model.origin.centre_id.toLowerCase()}:weather-observations`
           this.model.settings.topicHierarchy = 
-            `${this.model.poc.country.toLowerCase()}/${this.model.origin.centre_id.toLowerCase()}/data/${this.model.properties["wmo:dataPolicy"]}/weather/observations`
+            `${this.model.distrib.country.toLowerCase()}/${this.model.origin.centre_id.toLowerCase()}/data/${this.model.properties["wmo:dataPolicy"]}/weather/observations`
         }
       }
 
@@ -511,17 +566,11 @@ export default {
       if ($event.fullKey === "poc.postalCode") {
         this.model.poc.postalCode = this.model.poc.postalCode.toUpperCase()
       }
-      if ($event.fullKey === "poc.country") {
-        this.model.poc.country = this.model.poc.country.toUpperCase()
-      }
       if ($event.fullKey === "distrib.email") {
         this.model.distrib.email = this.model.distrib.email.toLowerCase()
       }
       if ($event.fullKey === "distrib.postalCode") {
         this.model.distrib.postalCode = this.model.distrib.postalCode.toUpperCase()
-      }
-      if ($event.fullKey === "distrib.country") {
-        this.model.distrib.country = this.model.distrib.country.toUpperCase()
       }
 
     },
@@ -585,9 +634,9 @@ export default {
       output["properties"]["wis2box"]["retention"] =  `P${input.settings.retention.toUpperCase()}`
 
       // "properties"."themes"
-      output["properties"]["themes"] = []
+      output["properties"]["themes"] = [{"concepts":[]}]
       input.settings.keywords.forEach(function (keyword) {
-        output.properties.themes.push({ "concepts": [{ "id": keyword }] })
+        output.properties.themes[0]["concepts"].push({ "id": keyword })
       })
 
       // "properties"."providers"

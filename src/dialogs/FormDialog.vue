@@ -90,23 +90,26 @@
           </v-row>
         </v-container>
       </v-form>
-<!--      <div class="d-flex flex-column">-->
-<!--        <v-btn-->
-<!--            color="success"-->
-<!--            class="mt-4"-->
-<!--            block-->
-<!--            @click="this.validate"-->
-<!--        >-->
-<!--          Validate-->
-<!--        </v-btn>-->
-<!--      </div>-->
-      <v-item style="height: 600px; width: 100%">
-        <geometry-editor @geomUpdate="handleGeometryUpdate" v-bind:input-feature="stationData"
-        ></geometry-editor>
+      <!--      <div class="d-flex flex-column">-->
+      <!--        <v-btn-->
+      <!--            color="success"-->
+      <!--            class="mt-4"-->
+      <!--            block-->
+      <!--            @click="this.validate"-->
+      <!--        >-->
+      <!--          Validate-->
+      <!--        </v-btn>-->
+      <!--      </div>-->
+      <v-item-group>
+        <v-item style="height: 600px; width: 100%">
+          <geometry-editor @geomUpdate="handleGeometryUpdate" v-bind:input-feature="stationData"
+          ></geometry-editor>
 
-      </v-item>
+        </v-item>
+      </v-item-group>
+
       <v-spacer/>
-        <v-card-actions>
+      <v-card-actions>
         <v-spacer/>
         <v-btn color="pink lighten-1" class="mr-1" text @click="close">
           Cancel
@@ -177,7 +180,7 @@ export default {
     formContent: {},
     stationStatus: [],
     facilityTypes: [],
-    wmoRegions:[],
+    wmoRegions: [],
     submitFunc: Function,
     formTitle: null,
     discoData: []
