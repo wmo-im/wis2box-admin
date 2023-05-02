@@ -276,7 +276,8 @@
                             "pattern":  "Invalid 3-letter code.",
                             "required":  "Required"
                         }
-                    }
+                    },
+                    "enum": []
                 },
                 "hoursOfService": {
                     "title": "Hours of Service",
@@ -428,7 +429,8 @@
                             "pattern":  "Invalid 3-letter code.",
                             "required":  "Required"
                         }
-                    }
+                    },
+                    "enum": []
                 },
                 "hoursOfService": {
                     "title": "Hours of Service",
