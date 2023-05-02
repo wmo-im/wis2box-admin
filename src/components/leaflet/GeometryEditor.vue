@@ -93,6 +93,7 @@
 <script>
 import {LMap, LTileLayer, LControlLayers, LMarker, LControl} from 'vue2-leaflet';
 import {LatLng} from "leaflet";
+const coordinatePrecision=10
 
 export default {
   name: "GeometryEditor",
@@ -127,7 +128,12 @@ export default {
   watch: {
     markerXYPosition: {
       handler(newVal) {
-        this.$emit('geomUpdate', [parseFloat(newVal.lng), parseFloat(newVal.lat), parseFloat(this.elevation)])
+        const nLat = parseFloat(newVal.lat.toPrecision(coordinatePrecision))
+        const nLng = parseFloat(newVal.lng.toPrecision(coordinatePrecision))
+        if (this.markerXYPosition.lat !== nLat | this.markerXYPosition.lng !== nLng) {
+          this.markerXYPosition = new LatLng(nLat, nLng)
+        }
+        this.$emit('geomUpdate', [nLng, nLat, parseFloat(this.elevation)])
         // when dragging the marker - the timeout helps reduce the jittering
         setTimeout(() => {
           this.$refs.leafMap.mapObject.invalidateSize()
@@ -146,7 +152,7 @@ export default {
   methods: {
     parseInputGeom(inputGeom) {
       if (Object.keys(inputGeom).length > 0) {
-        const markerLatLng = new LatLng(inputGeom.coordinates[1], inputGeom.coordinates[0])
+        const markerLatLng = new LatLng(inputGeom.coordinates[1].toPrecision(coordinatePrecision), inputGeom.coordinates[0].toPrecision(coordinatePrecision))
         this.$emit('geomUpdate', [markerLatLng.lng, markerLatLng.lng, inputGeom.coordinates[2]])
 
         return markerLatLng
